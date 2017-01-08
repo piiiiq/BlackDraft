@@ -16,7 +16,7 @@
 * 支持产生中文、英文以及意大利人名<br><br>
 下载地址：<br>
 =====
-百度网盘: http://pan.baidu.com/s/1qY3zB5q 密码:teyj<br>
+* 百度网盘: http://pan.baidu.com/s/1qY3zB5q 密码:teyj<br>
 
 <br>
 ---------------软件截图--------------<br>
