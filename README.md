@@ -6,6 +6,7 @@
 
 软件特性：<br>
 =======
+* 支持导入/导出doc/docx/纯文本文件
 * 支持对项目里的所有文件进行查找和替换，查找和替换支持正则表达式<br>
 * 支持中文预定义列表，可对人名、短语以及专有词汇进行预定义，在编辑器中按下Alt+/快捷键可唤出预定义词汇选择框进行选择并插入正文，使用预定义功能时需先在项目里新建一个名为“预定义”的文件<br>
 * 支持自动滚屏，可将正在编辑的行固定在屏幕中央（类似Scrivener程序中的打字机滚动），使用自动滚屏时需按下ctrl+shift+/组合键在文档末尾插入一些空行<br>
@@ -18,9 +19,9 @@
 普通视图：
 ![image](https://github.com/piiiiq/Black/blob/master/images/new.PNG)
 窗口写作视图：
-![image](https://github.com/piiiiq/Black/blob/master/images/1.PNG)
-全屏写作视图：
 ![image](https://github.com/piiiiq/Black/blob/master/images/11.PNG)
+全屏写作视图：
+![image](https://github.com/piiiiq/Black/blob/master/images/1.PNG)
 预定义列表：
 ![image](https://github.com/piiiiq/Black/blob/master/images/2.PNG)
 快键菜单：
