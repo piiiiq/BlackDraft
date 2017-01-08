@@ -25,7 +25,7 @@
 普通视图：
 ![image](https://github.com/piiiiq/Black/blob/master/images/new.PNG)
 窗口写作视图：
-![image](https://github.com/piiiiq/Black/blob/master/images/9.jpg)
+![image](https://github.com/piiiiq/Black/blob/master/images/11.PNG)
 全屏写作视图：
 ![image](https://github.com/piiiiq/Black/blob/master/images/1.PNG)
 预定义列表：
