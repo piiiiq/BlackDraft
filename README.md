@@ -14,4 +14,4 @@
 支持编辑文件及位置记忆，重新启动程序时会自动打开上次所编辑的文件，并将光标定位至上次编辑的位置
 支持产生中文、英文以及意大利人名
 
-![image](https://https://github.com/piiiiq/Black/edit/maste/images/new.png)
+![image](https://github.com/piiiiq/Black/edit/maste/images/new.png)
