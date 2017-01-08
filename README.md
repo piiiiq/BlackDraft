@@ -14,8 +14,11 @@
 * 支持项目备份<br>
 * 支持编辑文件及位置记忆，重新启动程序时会自动打开上次所编辑的文件，并将光标定位至上次编辑的位置<br>
 * 支持产生中文、英文以及意大利人名<br><br>
-下载地址：
-[百度网盘]http://pan.baidu.com/s/1qY3zB5q 密码:teyj
+下载地址：<br>
+=====
+百度网盘: http://pan.baidu.com/s/1qY3zB5q 密码:teyj<br>
+
+<br>
 ---------------软件截图--------------<br>
 普通视图：
 ![image](https://github.com/piiiiq/Black/blob/master/images/new.PNG)
