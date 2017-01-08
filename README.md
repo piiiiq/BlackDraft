@@ -24,4 +24,4 @@
 快键菜单：
 ![image](https://github.com/piiiiq/Black/blob/master/images/3.PNG)
 
-![image](https://github.com/piiiiq/Black/blob/master/images/4.PNG)![image](https://github.com/piiiiq/Black/blob/master/images/5.PNG)
+![image](https://github.com/piiiiq/Black/blob/master/images/4.jpg)![image](https://github.com/piiiiq/Black/blob/master/images/5.jpg)
