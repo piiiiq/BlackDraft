@@ -23,6 +23,12 @@
 * github： https://github.com/piiiiq/Black/releases/download/v1.20/Black-1.20.zip
 * 百度网盘: http://pan.baidu.com/s/1qY3zB5q 密码:teyj<br>
 
+已知问题：<br>
+-------------
+* 如果出现输入法选词框不跟随光标的现象，请退出程序，运行程序根目录下的Blackc.exe程序再次启动程序并做尝试<br>
+* 用QQ拼音输入法在程序中输入时可能会使程序崩溃，这是QQ拼音的问题<br>
+
+出现崩溃时不要立刻重启程序，请先将程序根目录下的logs目录里的log.txt文件发给我，方便我排错。如果logs目录里的log.txt内容为空，请检查程序根目录下是否存在包含log字样的文本文件，如果存在请将其发给我。<br>
 <br>
 ---------------软件截图--------------<br>
 普通视图：
