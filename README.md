@@ -1,6 +1,6 @@
 软件是自己用来撰写小说草稿的，只支持windows系统，不具备排版、公式等功能。受限于SWT-StyledText类的功能，软件甚至不支持段落间距，如果您需要上述这些功能，就不必在这个软件上浪费时间了。<br>
 
-本来是给自己用的，以前用word写东西，在多个文件间查找/替换不太方便，而且对于特殊词汇和短语也无法自动补全，于是动手做了这个软件。功能上比起Scrivener还差得很远，Scrivener是一个团队做的，这个程序只有我一人捣鼓。好歹也有个样子了，发上来供有兴趣的作者测试。发现bug请回帖，或者发邮件至beihuiguixian@hotmail.com 。提交bug的同时请同时奉上你的大名或者网名，我会将亲的名字列入软件测试者名单。<br>
+本来是给自己用的，以前用word写东西，在多个文件间查找/替换不太方便，而且对于特殊词汇和短语也无法自动补全，于是动手做了这个软件。发现bug请点击“帮助-发送反馈”将bug告诉我，或发邮件至beihuiguixian@hotmail.com 。提交bug的同时请同时奉上你的大名或者网名，我会将亲的名字列入软件测试者名单。<br>
 2017.01.05更新：版本更新至1.20，补全一些菜单，修复了所有发现的bug，增加检查更新功能（程序启动时会自动检查是否存在新版本）。<br>
 --------------------------<br>
 软件特性：<br>
@@ -14,8 +14,10 @@
 * 支持项目备份<br>
 * 支持编辑文件及位置记忆，重新启动程序时会自动打开上次所编辑的文件，并将光标定位至上次编辑的位置<br>
 * 支持产生中文、英文以及意大利人名<br><br>
+
+
 下载地址：<br>
-=====
+------------------------
 * 百度网盘: http://pan.baidu.com/s/1qY3zB5q 密码:teyj<br>
 
 <br>
@@ -23,7 +25,7 @@
 普通视图：
 ![image](https://github.com/piiiiq/Black/blob/master/images/new.PNG)
 窗口写作视图：
-![image](https://github.com/piiiiq/Black/blob/master/images/11.PNG)
+![image](https://github.com/piiiiq/Black/blob/master/images/9.jpg)
 全屏写作视图：
 ![image](https://github.com/piiiiq/Black/blob/master/images/1.PNG)
 预定义列表：
