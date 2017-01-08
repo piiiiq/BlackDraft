@@ -13,6 +13,15 @@
 支持项目备份
 支持编辑文件及位置记忆，重新启动程序时会自动打开上次所编辑的文件，并将光标定位至上次编辑的位置
 支持产生中文、英文以及意大利人名
-
+普通视图：
 ![image](https://github.com/piiiiq/Black/blob/master/images/new.PNG)
+窗口写作视图：
 ![image](https://github.com/piiiiq/Black/blob/master/images/1.PNG)
+全屏写作视图：
+![image](https://github.com/piiiiq/Black/blob/master/images/11.PNG)
+预定义列表：
+![image](https://github.com/piiiiq/Black/blob/master/images/2.PNG)
+快键菜单：
+![image](https://github.com/piiiiq/Black/blob/master/images/3.PNG)
+
+![image](https://github.com/piiiiq/Black/blob/master/images/4.PNG)![image](https://github.com/piiiiq/Black/blob/master/images/5.PNG)
