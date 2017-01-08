@@ -15,3 +15,4 @@
 支持产生中文、英文以及意大利人名
 
 ![image](https://github.com/piiiiq/Black/blob/master/images/new.PNG)
+(https://github.com/piiiiq/Black/blob/master/images/1.PNG)
