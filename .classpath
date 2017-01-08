@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Mud"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/MyAPI"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/org.eclipse.core.commands_3.8.0.v20160316-1921.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/org.eclipse.core.runtime_3.12.0.v20160606-1342.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/org.eclipse.equinox.common_3.8.0.v20160509-1230.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/org.eclipse.jface.databinding_1.8.0.v20160420-2231.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/org.eclipse.jface.text_3.11.1.v20160819-1517.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/org.eclipse.jface_3.12.0.v20160518-1929.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/org.eclipse.osgi_3.11.1.v20160708-1632.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/org.eclipse.swt.win32.win32.x86_3.105.1.v20160907-0248.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/org.eclipse.text_3.6.0.v20160503-1849.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/poi-3.13-beta1-20150723.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/poi-examples-3.13-beta1-20150723.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/poi-excelant-3.13-beta1-20150723.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/poi-ooxml-3.13-beta1-20150723.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/poi-ooxml-schemas-3.13-beta1-20150723.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/poi-scratchpad-3.13-beta1-20150723.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/black-lib/xmlbeans-2.6.0.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/java-lib/javamail-1.4.7/mail.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/java-lib/ansj_seg-5.0.2-all-in-one.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
