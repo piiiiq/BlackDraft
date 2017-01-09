@@ -51,6 +51,7 @@ import org.eclipse.jface.text.IDocumentPartitioningListener;
 import org.eclipse.jface.text.IPositionUpdater;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITypedRegion;
+import org.eclipse.jface.text.MarkSelection;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.text.TextViewerUndoManager;
@@ -125,6 +126,7 @@ public class blackAction implements Serializable {
 	Color lastForeColor, lastBackColor;
 	public int posForTypeMode = 2;
 	PrintStream errorStream, sysErr;
+	ArrayList<markstat> markstat = new ArrayList<>();
 
 	public blackAction(black b) {
 		this.b = b;
@@ -1399,10 +1401,11 @@ public class blackAction implements Serializable {
 		dd.setText("设置备份目录");
 
 		String path = dd.open();
-		if (path != null){
+		if (path != null) {
 			b.setAppProperties("BackupDir", path);
 			return true;
-		}else return false;
+		} else
+			return false;
 	}
 
 	/**
@@ -1434,7 +1437,8 @@ public class blackAction implements Serializable {
 				getMessageBox("备份信息", "备份失败！\n" + "复制文件时出错！");
 			showinExplorer(backupfile.toString(), true);
 		} else {
-			if(setBackupDir()) startBackup();
+			if (setBackupDir())
+				startBackup();
 		}
 	}
 
@@ -1496,7 +1500,8 @@ public class blackAction implements Serializable {
 			}
 		}
 	}
-	public void deleteSpaceAtLineEnd(){
+
+	public void deleteSpaceAtLineEnd() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < b.text.getLineCount(); i++) {
 			String line = b.text.getLine(i);
@@ -1519,26 +1524,28 @@ public class blackAction implements Serializable {
 		}
 		b.text.setText(sb.toString());
 	}
+
 	/**
 	 * 用于打开项目外的文件
 	 */
-	public void openFileWithoutProject(){
-		FileDialog fd = getFileDialog("打开文件", "", b, SWT.OPEN, new String[]{"*.black"});
+	public void openFileWithoutProject() {
+		FileDialog fd = getFileDialog("打开文件", "", b, SWT.OPEN, new String[] { "*.black" });
 		String file = fd.getFileName();
-		if(!file.equals("")){
-			File filepath = new File(fd.getFilterPath()+"\\"+file);
-			if(filepath.exists()){
-				//准备打开的文件位于项目路径内
-				if(filepath.getParent().equals(b.projectFile.getParent()+"\\Files")){
+		if (!file.equals("")) {
+			File filepath = new File(fd.getFilterPath() + "\\" + file);
+			if (filepath.exists()) {
+				// 准备打开的文件位于项目路径内
+				if (filepath.getParent().equals(b.projectFile.getParent() + "\\Files")) {
 					openFile(filepath, true);
-				}else{//当前所编辑的是项目内的文件
-					if(b.getCurrentEditFile() != null){
-						if(b.getCurrentEditFile().getParent().equals(b.projectFile.getParent()+"\\Files")){
+				} else {// 当前所编辑的是项目内的文件
+					if (b.getCurrentEditFile() != null) {
+						if (b.getCurrentEditFile().getParent().equals(b.projectFile.getParent() + "\\Files")) {
 							b.closeCurrentFile(true);
-						}else b.closeCurrentFile(false);
+						} else
+							b.closeCurrentFile(false);
 					}
-					
-					if(filepath.getName().lastIndexOf(".black") != -1){
+
+					if (filepath.getName().lastIndexOf(".black") != -1) {
 						System.out.println(filepath);
 						ioThread io = new ioThread(b);
 						b.createTextArea(new TextViewerUndoManager(100));
@@ -1548,29 +1555,32 @@ public class blackAction implements Serializable {
 					}
 				}
 
-			}			
+			}
 		}
 	}
-	public void getTitleList(){
-		if(b.text == null) return;
+
+	public void getTitleList() {
+		if (b.text == null)
+			return;
 		StringBuilder sb = new StringBuilder();
-		for(int i=0; i<b.text.getLineCount(); i++){
+		for (int i = 0; i < b.text.getLineCount(); i++) {
 			String line = b.text.getLine(i);
-			if(cheakDocument.cheakString(line)) sb.append(line+"\n");
+			if (cheakDocument.cheakString(line))
+				sb.append(line + "\n");
 		}
-		bMessageBox bes = new bMessageBox(b,SWT.None,false) {
-			
+		bMessageBox bes = new bMessageBox(b, SWT.None, false) {
+
 			@Override
 			public void saveAction() {
 				// TODO Auto-generated method stub
-				
+
 			}
 		};
 		bes.setTextFontinfo(12, SWT.ITALIC);
 		bes.setText(sb.toString());
 		bes.setTitle("标题列表");
 		bes.text.addCaretListener(new CaretListener() {
-			
+
 			@Override
 			public void caretMoved(CaretEvent arg0) {
 				// TODO Auto-generated method stub
@@ -1581,9 +1591,10 @@ public class blackAction implements Serializable {
 				int indexoftext = text.indexOf(str);
 				b.text.setTopIndex(b.text.getLineAtOffset(indexoftext));
 			}
-		});	
+		});
 		bes.open();
 	}
+
 	public void importFiles(boolean onlytext, String textfileencode) {
 		TextViewer tv = new TextViewer(b, SWT.None);
 		tv.getTextWidget().setVisible(false);
@@ -2004,7 +2015,7 @@ public class blackAction implements Serializable {
 	 * 在windows系统资源管理器中显示当前所编辑的文件
 	 */
 	void showFileInExplorer() {
-		if(b.getCurrentEditFile() != null)
+		if (b.getCurrentEditFile() != null)
 			showinExplorer(b.getCurrentEditFile().toString(), true);
 	}
 
@@ -2142,8 +2153,68 @@ public class blackAction implements Serializable {
 		}
 
 		markTextData = list;
+		//校验预定义频率arraylist里的条目是否在预定义文件中存在，如果不存在则将条目删除
+		for(int a=0;a<markstat.size();a++){
+			boolean ishas = false;
+			markstat ms = markstat.get(a);
+			for(int i=0;i<markTextData.size();i++){
+				String str = markTextData.get(i).text;
+				if(ms.text.equals(str)){
+					ishas = true;
+					break;
+				}
+			}
+			if(!ishas) markstat.remove(a);
+		}
 	}
+	/**
+	 * 判断给定的字符串是否在频率统计arraylist中存在
+	 * @param text
+	 */
+	boolean markstatIshas(String text){		
+		boolean ishas = false;
+		Iterator<markstat> it = markstat.iterator();
+		while(it.hasNext()){
+			if(text.equals(it.next().text)){
+				ishas = true;
+				break;
+			}
+		}
+		return ishas;
+	}
+	void setTopOnMarkstat(String text){
+		for(int i=0;i<markstat.size();i++){
+			if(markstat.get(i).text.equals(text)){
+				int stat = markstat.get(i).count;
+				markstat.remove(i);
+				markstat.add(new markstat(text, stat));
+			}
+		}
+	}
+	/**
+	 * 依照频率对统计arraylist中的条目进行排序
+	 */
+	void setindexOfMarkstat(){
+		
+		boolean seted;
+		ArrayList<markstat> al = new ArrayList<>();
+		while(markstat.size() > 0){
+			int maxindex = 0;
+			int max = 0;
+			for(int i=0;i<markstat.size();i++){
+				if(markstat.get(i).count > max){
+					max = markstat.get(i).count;
+					maxindex = i;
+				}
+			}
+			
+			al.add(markstat.get(maxindex));
+			markstat.remove(maxindex);
+			
 
+		}
+		markstat = al;
+	}
 	void findinMark() {
 		if (marktext == null || marktext.equals(""))
 			readMarkFile();
@@ -2154,45 +2225,100 @@ public class blackAction implements Serializable {
 				findi = new findinfo(b, b, SWT.None);
 			else
 				findi = new findinfo(b.wv, b, SWT.None);
+			
+			//对预定义文件中的条目的顺序进行分组
 			int index = 0;
-			List<TextRegion> tr_no = new ArrayList<TextRegion>();
+			List<TextRegion> tr_no = new ArrayList<TextRegion>();// 完全不匹配的条目
+			List<TextRegion> tr_line = new ArrayList<>();// 当前段落中包含的条目
+			List<TextRegion> tr_doc = new ArrayList<>();// 当前文档中包含的条目
+
+			String lastchar = null;
+			if (b.text.getCaretOffset() > 0)
+				lastchar = b.text.getText(b.text.getCaretOffset() - 1, b.text.getCaretOffset() - 1);
+			String line = b.text.getLine(b.text.getLineAtOffset(b.text.getCaretOffset()));
+			String doc = b.text.getText();
+			
 			Iterator<TextRegion> it_tr = markTextData.iterator();
 			while (it_tr.hasNext()) {
 				TextRegion tr = it_tr.next();
-				if (b.text.getCaretOffset() > 0) {
-					if (cheakDocument.findString(tr.text,
-							b.text.getText(b.text.getCaretOffset() - 1, b.text.getCaretOffset() - 1))) {
+				// 如果当前预定义条目中包含编辑器光标前一个字符，就将其放到前面
+				if (lastchar != null && cheakDocument.findString(tr.text, lastchar)) {
+					if(!markstatIshas(tr.text)){
 						TreeItem ti = new TreeItem(findi.tree, SWT.None);
 						// ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLUE));
-						ti.setText(tr.text);
+						ti.setText(tr.text+" ("+lastchar+")");
 						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLUE));
+						ti.setFont(SWTResourceManager.getFont("微软雅黑", 11, SWT.BOLD));
 						ti.setData("textregion", tr);
 						ti.setData("index", index);
 						index++;
-					} else {
-						tr_no.add(tr);
-					}
+					}else setTopOnMarkstat(tr.text);
+				}else if(markstatIshas(tr.text)){ 
+				}else if (cheakDocument.findString(line, tr.text)) {
+					tr_line.add(tr);
+				} else if (cheakDocument.findString(doc, tr.text)) {
+					tr_doc.add(tr);
 				} else {
-					TreeItem ti = new TreeItem(findi.tree, SWT.None);
-					ti.setText(tr.text);
-					ti.setData("textregion", tr);
-					ti.setData("index", index);
-					index++;
+					tr_no.add(tr);
 				}
-
-				// ti.setImage(SWTResourceManager.getImage(black.class,
-				// "/yang/app/black/icons/push_pin_icon&16.png"));
 			}
-
+			if(markstat.size() > 0){
+				TextRegion trstat = new TextRegion(markstat.get(markstat.size()-1).text, 0, 0);
+				TreeItem ti = new TreeItem(findi.tree, SWT.None);
+				ti.setFont(SWTResourceManager.getFont("微软雅黑", 11, SWT.BOLD));
+				ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+				ti.setText(trstat.text+" (上次所选)"+"("+markstat.get(markstat.size()-1).count+")");
+				ti.setData("textregion", trstat);
+				ti.setData("index", index);
+				index++;
+			}
+			
+			for(int i=0;i<markstat.size()-1;i++){
+				TextRegion trstat = new TextRegion(markstat.get(i).text, 0, 0);
+				TreeItem ti = new TreeItem(findi.tree, SWT.None);
+				ti.setFont(SWTResourceManager.getFont("微软雅黑", 11, SWT.BOLD));
+				ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+				ti.setText(trstat.text+"("+markstat.get(i).count+")");
+				ti.setData("textregion", trstat);
+				ti.setData("index", index);
+				index++;
+			}
+			
+			Iterator<TextRegion> it_line = tr_line.iterator();
+			while(it_line.hasNext()){
+				TextRegion trline = it_line.next();
+				TreeItem ti = new TreeItem(findi.tree, SWT.None);
+				ti.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.BOLD));
+				ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
+				ti.setText(trline.text+" (当前段落)");
+				ti.setData("textregion", trline);
+				ti.setData("index", index);
+				index++;
+			}
+			
+			Iterator<TextRegion> it_doc = tr_doc.iterator();
+			while(it_doc.hasNext()){
+				TextRegion trdoc = it_doc.next();
+				TreeItem ti = new TreeItem(findi.tree, SWT.None);
+				ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN));
+				ti.setFont(SWTResourceManager.getFont("微软雅黑", 9, SWT.BOLD));
+				ti.setText(trdoc.text+" (当前文档)");
+				ti.setData("textregion", trdoc);
+				ti.setData("index", index);
+				index++;
+			}
+			
 			Iterator<TextRegion> it_no = tr_no.iterator();
 			while (it_no.hasNext()) {
 				TextRegion trno = it_no.next();
 				TreeItem ti = new TreeItem(findi.tree, SWT.None);
+				// ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLUE));
 				ti.setText(trno.text);
 				ti.setData("textregion", trno);
 				ti.setData("index", index);
 				index++;
 			}
+			findi.findInMark = true;
 			findi.setVisible(true);
 		}
 	}
@@ -3199,7 +3325,8 @@ public class blackAction implements Serializable {
 	}
 
 	public void saveAllAsText() {
-		if(b.fileindex.size() == 0) return;
+		if (b.fileindex.size() == 0)
+			return;
 		String dir = b.projectFile.getParentFile().getAbsolutePath() + "\\Files\\";
 		DirectoryDialog getdir = new DirectoryDialog(b);
 		getdir.setText("选择输出目录");
@@ -3224,7 +3351,7 @@ public class blackAction implements Serializable {
 	}
 
 	public void saveAsText() {
-		if(b.currentEditFile == null || b.text == null)
+		if (b.currentEditFile == null || b.text == null)
 			return;
 		FileDialog fd = getFileDialog("转存为txt文件", getShowNameByRealName(b.getCurrentEditFile().getName()), b, SWT.SAVE,
 				new String[] { "*.txt" });
@@ -3236,10 +3363,11 @@ public class blackAction implements Serializable {
 				getMessageBox("", "转存失败");
 		}
 	}
-	
+
 	public void saveAllAsTextToOneFile() {
-		if(b.fileindex.size() == 0) return;
-		
+		if (b.fileindex.size() == 0)
+			return;
+
 		FileDialog fd = getFileDialog("保存为TXT文件", "", b, SWT.SAVE, new String[] { "*.txt" });
 
 		if (fd.getFileNames().length == 1) {
@@ -3363,5 +3491,13 @@ class fileInfo {
 	public fileInfo(String realname, String showname) {
 		this.realname = realname;
 		this.showname = showname;
+	}
+}
+class markstat{
+	String text;
+	int count;
+	public markstat(String text, int count){
+		this.text = text;
+		this.count = count;
 	}
 }

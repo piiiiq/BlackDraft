@@ -14,8 +14,8 @@ public class allInfo {
 			+"\n------------（测试人员）"
 			+ "\nAlice T.S.(aliceasmud@gmail.com)"
 			+"\n------------（Linux版本）",
-		appVersion = "1.20",
-		buildDate = "2017.01.05",
+		appVersion = "1.25",
+		buildDate = "2017.01.09",
 		codeName = "Black - Bradypus pygmaeus(侏三趾树懒，一个仅存于某小岛上的极危物种)";
 	
 }

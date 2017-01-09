@@ -2122,7 +2122,6 @@ public class black extends mud {
 			if(!donotChangeTitleBar)
 				setText("Black");
 		}
-
 		changeSaveLabelState();
 	}
 

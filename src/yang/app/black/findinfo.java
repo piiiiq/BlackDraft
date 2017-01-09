@@ -2,6 +2,7 @@ package yang.app.black;
 
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CaretEvent;
@@ -16,6 +17,7 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -30,7 +32,7 @@ import yang.demo.swt.windowLocation;
 
 public class findinfo extends Shell implements Serializable{
 	static final long serialVersionUID = 42L;
-
+	boolean findInMark;
 	black b;
 	Tree tree;
 	static int text_oldKeyArrowUpAction,text_oldKeyArrowDownAction,text_oldKeyEnterAction,text_oldAltEnterAction,text_oldAltAction;
@@ -279,6 +281,10 @@ public class findinfo extends Shell implements Serializable{
 				// TODO Auto-generated method stub
 				if(drawstr != null){
 					TextLayout tl = new TextLayout(getDisplay());
+					Font font = SWTResourceManager.getFont("Î¢ÈíÑÅºÚ", 9, SWT.NONE);
+					if(font != null)
+						tl.setFont(font);
+					
 					tl.setText(drawstr);
 					tl.draw(e.gc, composite.getSize().x-tl.getLineBounds(0).width-10, -2);
 					tl.dispose();
@@ -358,8 +364,10 @@ public class findinfo extends Shell implements Serializable{
 	public void insert(){
 		if(tree.getSelectionCount() == 1){
 			if(insertAction == none){
+				if(findInMark) addtomarkstat(((TextRegion)tree.getSelection()[0].getData("textregion")).text);
 				b.ba.insertText(((TextRegion)tree.getSelection()[0].getData("textregion")).text,b.text);
 			}else if(insertAction == replace){
+				if(findInMark) addtomarkstat(((TextRegion)tree.getSelection()[0].getData("textregion")).text);
 				
 				TextRegion tr = (TextRegion)tree.getSelection()[0].getData("textregion");
 				if(b.text.getCaretOffset() > 0){
@@ -370,12 +378,31 @@ public class findinfo extends Shell implements Serializable{
 					}else 
 						b.ba.insertText(((TextRegion)tree.getSelection()[0].getData("textregion")).text,b.text);
 				}else b.ba.insertText(((TextRegion)tree.getSelection()[0].getData("textregion")).text,b.text);
-
+				
 			}else if(insertAction == readonly){
 				
 			}
 			dispose();
 		}
+	}
+	public void addtomarkstat(String text){
+		Iterator<markstat> it = b.ba.markstat.iterator();
+		boolean ishas = false;
+		while(it.hasNext()){
+			markstat ms = it.next();
+			if(ms.text.equals(text)){
+				ms.count = ms.count+1;
+				b.ba.setindexOfMarkstat();
+				b.ba.setTopOnMarkstat(text);
+				ishas = true;
+				break;
+			}
+		}
+		if(!ishas) {
+			b.ba.markstat.add(new markstat(text, 1));
+			b.ba.setindexOfMarkstat();
+		}
+		
 	}
 	public void drawstrAction(int action){
 		switch(action){
