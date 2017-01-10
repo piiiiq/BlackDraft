@@ -131,6 +131,21 @@ public class blackTextArea implements Serializable {
 		st.setKeyBinding(13, -1);
 		st.setKeyBinding(16777225, -1);//屏蔽改写模式按键
 		
+//		st.addKeyListener(new KeyListener() {
+//			
+//			@Override
+//			public void keyReleased(KeyEvent arg0) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void keyPressed(KeyEvent arg0) {
+//				// TODO Auto-generated method stub
+//				System.out.println(arg0.keyCode);
+//			}
+//		});
+		
 		ck_enter = new checkKey(13) {
 			
 			@Override

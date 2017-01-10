@@ -35,8 +35,9 @@ public class findinfo extends Shell implements Serializable{
 	boolean findInMark;
 	black b;
 	Tree tree;
-	static int text_oldKeyArrowUpAction,text_oldKeyArrowDownAction,text_oldKeyEnterAction,text_oldAltEnterAction,text_oldAltAction;
-	checkKey keyUp, keyDown, keyEnter, keyAltEnter;
+	static int text_oldKeyArrowUpAction,text_oldKeyArrowDownAction,text_oldKeyEnterAction,text_oldAltEnterAction,text_oldAltAction
+	,oldkeyone,oldkeytwo;
+	checkKey keyUp, keyDown, keyEnter, keyAltEnter,keyone,keytwo;
 	MouseListener ml;
 	KeyListener kl;
 	CaretListener cl;
@@ -67,12 +68,17 @@ public class findinfo extends Shell implements Serializable{
 			text_oldKeyEnterAction = b.text.getKeyBinding(13);
 			text_oldAltEnterAction = b.text.getKeyBinding(SWT.ALT|13);
 			text_oldAltAction = b.text.getKeyBinding(SWT.ALT);
+			oldkeyone = b.text.getKeyBinding(49);
+			oldkeytwo = b.text.getKeyBinding(50);
+			
 			b.text.setKeyBinding(SWT.ARROW_UP, -1);
 			b.text.setKeyBinding(SWT.ARROW_DOWN, -1);
 			b.blackTextArea.removeKeyAction(b.blackTextArea.ck_enter);
 			b.text.setKeyBinding(SWT.ALT|13, -1);
 			b.text.setKeyBinding(SWT.ALT, -1);
 			b.blackTextArea.removeKeyAction(b.blackTextArea.keyenter);
+			b.text.setKeyBinding(49, -1);
+			b.text.setKeyBinding(50, -1);
 			
 			keyUp = new checkKey(SWT.ARROW_UP) {
 				
@@ -124,6 +130,39 @@ public class findinfo extends Shell implements Serializable{
 				}
 			};
 			b.blackTextArea.addKeyAction(keyAltEnter);
+			keyone = new checkKey(49) {
+				
+				@Override
+				public void action() {
+					// TODO Auto-generated method stub
+					String text = ((TextRegion)tree.getSelection()[0].getData("textregion")).text;
+					int index = 0;
+					if((index = text.indexOf("·")) != -1){
+						String lastname = text.substring(0, index);
+						tree.getSelection()[0].setData("textOfinsert", lastname);
+						insert();
+					}
+				}
+			};
+			b.blackTextArea.addKeyAction(keyone);
+			keytwo = new checkKey(50) {
+				
+				@Override
+				public void action() {
+					// TODO Auto-generated method stub
+					String text = ((TextRegion)tree.getSelection()[0].getData("textregion")).text;
+					int index = 0;
+					if((index = text.lastIndexOf("·")) != -1){
+						if(index+1 < text.length()){
+							String firstname = text.substring(index+1, text.length());
+							tree.getSelection()[0].setData("textOfinsert", firstname);
+							insert();
+						}else return;
+						
+					}
+				}
+			};
+			b.blackTextArea.addKeyAction(keytwo);
 			ml = new MouseListener() {
 				
 				@Override
@@ -161,7 +200,7 @@ public class findinfo extends Shell implements Serializable{
 					// TODO Auto-generated method stub
 					if(e.keyCode == SWT.ALT){
 						//changeInsertAction();
-						insertAction = replace;
+						insertAction = none;
 						drawstrAction(insertAction);
 					}
 				}
@@ -171,7 +210,7 @@ public class findinfo extends Shell implements Serializable{
 					// TODO Auto-generated method stub
 					if(e.keyCode == SWT.ALT){
 						//changeInsertAction();
-						insertAction = none;
+						insertAction = replace;
 						drawstrAction(insertAction);
 					}
 				}
@@ -194,11 +233,15 @@ public class findinfo extends Shell implements Serializable{
 				b.text.setKeyBinding(SWT.ARROW_DOWN, text_oldKeyArrowDownAction);
 				b.text.setKeyBinding(SWT.SHIFT|13, text_oldAltEnterAction);
 				b.text.setKeyBinding(SWT.SHIFT, text_oldAltAction);
+				b.text.setKeyBinding(49, oldkeyone);
+				b.text.setKeyBinding(50, oldkeytwo);
 				b.blackTextArea.addKeyAction(b.blackTextArea.ck_enter);
 				b.blackTextArea.removeKeyAction(keyUp);
 				b.blackTextArea.removeKeyAction(keyDown);
 				b.blackTextArea.removeKeyAction(keyEnter);
 				b.blackTextArea.removeKeyAction(keyAltEnter);
+				b.blackTextArea.removeKeyAction(keyone);
+				b.blackTextArea.removeKeyAction(keytwo);
 				b.text.removeMouseListener(ml);
 				b.text.removeCaretListener(cl);
 				b.text.removeKeyListener(kl);
@@ -365,7 +408,9 @@ public class findinfo extends Shell implements Serializable{
 		if(tree.getSelectionCount() == 1){
 			if(insertAction == none){
 				if(findInMark) addtomarkstat(((TextRegion)tree.getSelection()[0].getData("textregion")).text);
-				b.ba.insertText(((TextRegion)tree.getSelection()[0].getData("textregion")).text,b.text);
+				if(tree.getSelection()[0].getData("textOfinsert") == null)
+					b.ba.insertText(((TextRegion)tree.getSelection()[0].getData("textregion")).text,b.text);
+				else b.ba.insertText((String)tree.getSelection()[0].getData("textOfinsert"), b.text);
 			}else if(insertAction == replace){
 				if(findInMark) addtomarkstat(((TextRegion)tree.getSelection()[0].getData("textregion")).text);
 				
@@ -387,31 +432,24 @@ public class findinfo extends Shell implements Serializable{
 	}
 	public void addtomarkstat(String text){
 		Iterator<markstat> it = b.ba.markstat.iterator();
-		boolean ishas = false;
-		while(it.hasNext()){
-			markstat ms = it.next();
-			if(ms.text.equals(text)){
-				ms.count = ms.count+1;
-				b.ba.setindexOfMarkstat();
-				b.ba.setTopOnMarkstat(text);
-				ishas = true;
-				break;
-			}
-		}
-		if(!ishas) {
+		hasinfo info = b.ba.markstatIshas(text);
+		if(info.ishas){
+			b.ba.markstat.get(info.index).count++;
+			b.ba.setindexOfMarkstat();
+			b.ba.setTopOnMarkstat(text);
+		}else{
 			b.ba.markstat.add(new markstat(text, 1));
 			b.ba.setindexOfMarkstat();
 		}
-		
 	}
 	public void drawstrAction(int action){
 		switch(action){
 		case none:
-			drawstr = "插入模式，松开Alt键切换至替换模式";
+			drawstr = "插入模式，按住Alt键不放切换至替换模式";
 			composite.redraw();
 			break;
 		case replace:
-			drawstr = "替换模式，按住Alt键不放切换至插入模式";
+			drawstr = "替换模式，松开Alt键切换至插入模式";
 			composite.redraw();
 		}
 	}

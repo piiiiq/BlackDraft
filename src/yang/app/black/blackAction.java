@@ -120,7 +120,7 @@ public class blackAction implements Serializable {
 	List<TextRegion> markTextData;
 	findWord find;
 	public String marktext = "";
-	boolean marktextIsChanged;
+	boolean marktextIsChanged,markstatIsChanged;
 	public Shell fullscreen;
 	boolean fullscreen_writingview;
 	Color lastForeColor, lastBackColor;
@@ -2081,18 +2081,39 @@ public class blackAction implements Serializable {
 			ioThread io = new ioThread(b);
 			IDocument doc = io.readBlackFile(markfile, null);
 			marktext = doc.get();
+			File statfile = new File(b.projectFile.getParentFile().getAbsolutePath()+"\\Settings\\markstat");
+			if(statfile.exists()){
+				markstat = (ArrayList<markstat>)io.readObjFile(statfile);
+			}
 		} else
 			b.log.appendLog("预定义文件不存在！", null, false);
 	}
 
 	void writeToMarkFile() {
 		File markfile = getRealFile("预定义");
-		if (markfile != null && markfile.exists() && marktextIsChanged) {
+		if (markfile != null && markfile.exists()) {
 			ioThread io = new ioThread(b);
-			Document docu = new Document();
-			docu.set(marktext);
-			io.writeBlackFile(markfile, docu, null);
-			marktextIsChanged = false;
+			if(marktextIsChanged){
+				Document docu = new Document();
+				docu.set(marktext);
+				io.writeBlackFile(markfile, docu, null);
+				marktextIsChanged = false;
+			}
+			File statfile = new File(b.projectFile.getParentFile().getAbsolutePath()+"\\Settings\\markstat");
+			if(!statfile.exists()){
+				if(!statfile.getParentFile().exists()) statfile.getParentFile().mkdir();
+				try {
+					statfile.createNewFile();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					getMessageBox("保存调频数据", "保存预定义文件调频数据时出错！");
+				}
+			}
+			if(markstat.size() > 0 && markstatIsChanged){
+				io.writeObjFile(statfile, markstat);
+			}
+			
 		}
 	}
 
@@ -2171,17 +2192,22 @@ public class blackAction implements Serializable {
 	 * 判断给定的字符串是否在频率统计arraylist中存在
 	 * @param text
 	 */
-	boolean markstatIshas(String text){		
+	hasinfo markstatIshas(String text){		
 		boolean ishas = false;
-		Iterator<markstat> it = markstat.iterator();
-		while(it.hasNext()){
-			if(text.equals(it.next().text)){
+		int index = 0;		
+		for(int i=0;i<markstat.size();i++){
+			if(text.equals(markstat.get(i).text)){
 				ishas = true;
+				index = i;
 				break;
 			}
 		}
-		return ishas;
+		return new hasinfo(ishas,index);
 	}
+	/**
+	 * 将一个已存在的条目置顶（放到markstat arraylist的末尾）
+	 * @param text
+	 */
 	void setTopOnMarkstat(String text){
 		for(int i=0;i<markstat.size();i++){
 			if(markstat.get(i).text.equals(text)){
@@ -2195,8 +2221,7 @@ public class blackAction implements Serializable {
 	 * 依照频率对统计arraylist中的条目进行排序
 	 */
 	void setindexOfMarkstat(){
-		
-		boolean seted;
+		markstatIsChanged = true;
 		ArrayList<markstat> al = new ArrayList<>();
 		while(markstat.size() > 0){
 			int maxindex = 0;
@@ -2225,6 +2250,8 @@ public class blackAction implements Serializable {
 				findi = new findinfo(b, b, SWT.None);
 			else
 				findi = new findinfo(b.wv, b, SWT.None);
+			findi.insertAction = findi.none;
+			findi.drawstrAction(findi.insertAction);
 			
 			//对预定义文件中的条目的顺序进行分组
 			int index = 0;
@@ -2237,23 +2264,30 @@ public class blackAction implements Serializable {
 				lastchar = b.text.getText(b.text.getCaretOffset() - 1, b.text.getCaretOffset() - 1);
 			String line = b.text.getLine(b.text.getLineAtOffset(b.text.getCaretOffset()));
 			String doc = b.text.getText();
-			
+			hasinfo info = null;
 			Iterator<TextRegion> it_tr = markTextData.iterator();
 			while (it_tr.hasNext()) {
 				TextRegion tr = it_tr.next();
 				// 如果当前预定义条目中包含编辑器光标前一个字符，就将其放到前面
 				if (lastchar != null && cheakDocument.findString(tr.text, lastchar)) {
-					if(!markstatIshas(tr.text)){
-						TreeItem ti = new TreeItem(findi.tree, SWT.None);
-						// ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLUE));
-						ti.setText(tr.text+" ("+lastchar+")");
-						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLUE));
-						ti.setFont(SWTResourceManager.getFont("微软雅黑", 11, SWT.BOLD));
-						ti.setData("textregion", tr);
-						ti.setData("index", index);
-						index++;
-					}else setTopOnMarkstat(tr.text);
-				}else if(markstatIshas(tr.text)){ 
+					TreeItem ti = new TreeItem(findi.tree, SWT.None);
+					// ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLUE));
+					info = markstatIshas(tr.text);
+					if(!info.ishas)ti.setText(tr.text+" ("+lastchar+")");
+					else{
+						markstat stat = markstat.get(info.index);
+						if(info.index == markstat.size()-1)
+							ti.setText(tr.text+" ("+lastchar+")"+"(上次所选)"+"("+stat.count+")");
+						else ti.setText(tr.text+" ("+lastchar+")"+"("+stat.count+")");
+						stat.visible = false;
+					}
+					ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLUE));
+					ti.setFont(SWTResourceManager.getFont("微软雅黑", 11, SWT.BOLD));
+					ti.setData("textregion", tr);
+					ti.setData("index", index);
+					index++;
+				}else if((info=markstatIshas(tr.text)).ishas){
+					markstat.get(info.index).visible = true;
 				}else if (cheakDocument.findString(line, tr.text)) {
 					tr_line.add(tr);
 				} else if (cheakDocument.findString(doc, tr.text)) {
@@ -2262,26 +2296,34 @@ public class blackAction implements Serializable {
 					tr_no.add(tr);
 				}
 			}
+			
+			//将频率arraylist中最后的条目最先呈现出来
 			if(markstat.size() > 0){
-				TextRegion trstat = new TextRegion(markstat.get(markstat.size()-1).text, 0, 0);
-				TreeItem ti = new TreeItem(findi.tree, SWT.None);
-				ti.setFont(SWTResourceManager.getFont("微软雅黑", 11, SWT.BOLD));
-				ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
-				ti.setText(trstat.text+" (上次所选)"+"("+markstat.get(markstat.size()-1).count+")");
-				ti.setData("textregion", trstat);
-				ti.setData("index", index);
-				index++;
+				markstat stat = markstat.get(markstat.size()-1);
+				if(stat.visible){
+					TextRegion trstat = new TextRegion(stat.text, 0, 0);
+					TreeItem ti = new TreeItem(findi.tree, SWT.None);
+					ti.setFont(SWTResourceManager.getFont("微软雅黑", 11, SWT.BOLD));
+					ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+					ti.setText(trstat.text+" (上次所选)"+"("+markstat.get(markstat.size()-1).count+")");
+					ti.setData("textregion", trstat);
+					ti.setData("index", index);
+					index++;
+				}	
 			}
 			
 			for(int i=0;i<markstat.size()-1;i++){
-				TextRegion trstat = new TextRegion(markstat.get(i).text, 0, 0);
-				TreeItem ti = new TreeItem(findi.tree, SWT.None);
-				ti.setFont(SWTResourceManager.getFont("微软雅黑", 11, SWT.BOLD));
-				ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
-				ti.setText(trstat.text+"("+markstat.get(i).count+")");
-				ti.setData("textregion", trstat);
-				ti.setData("index", index);
-				index++;
+				markstat stat = markstat.get(i);
+				if(stat.visible){
+					TextRegion trstat = new TextRegion(markstat.get(i).text, 0, 0);
+					TreeItem ti = new TreeItem(findi.tree, SWT.None);
+					ti.setFont(SWTResourceManager.getFont("微软雅黑", 11, SWT.BOLD));
+					ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+					ti.setText(trstat.text+"("+markstat.get(i).count+")");
+					ti.setData("textregion", trstat);
+					ti.setData("index", index);
+					index++;
+				}
 			}
 			
 			Iterator<TextRegion> it_line = tr_line.iterator();
@@ -3091,9 +3133,7 @@ public class blackAction implements Serializable {
 	}
 
 	public String keyinfo() {
-		String text = "（此处仅列出重要的快捷键）\nCtrl+~ 产生一个中文人名\nCtrl+1 启用窗口透明（写作视图下有效）\nCtrl+2 切换页面颜色（写作视图下有效）\nCtrl+3 切换行固定位置（可以将编辑的行固定至屏幕中央或屏幕顶部）\nCtrl+4 校验项目文件\nCtrl+5 切换写作视图背景\nCtrl+6 切换窗口/全屏写作视图\nCtrl+A 按一次选择当前段落，再按一次选择全部文本\nCtrl+C 复制\nCtrl+F 查找/替换\nCtrl+M 编辑预定义列表\nCtrl+Q 重新打开上一次所编辑的文件\nCtrl+V 粘贴\nCtrl+X 剪切\nCtrl+K 字数统计\nCtrl+Z 撤销对文档所做的改动\nCtrl+0 启动中文分词引擎分析当前文档内的中文人名\nCtrl+9 执行批量快速替换（需要快速替换列表）\nCtrl+8 显示当前文档内的所有标题（点击标题名称可以快速定位内容）\nCtrl+\\ 分析快速替换列表中的错误\nAlt+Z 重做对文档所做的改动\nTab 显示预定义列表，并将当前所编辑的行移至固定位置\nAlt+/显示预定义列表\nCtrl+Shift+/ 在文档末尾添加30个空行（要将所编辑的行固定至屏幕中央时需要先执行此操作）\nAlt+D 插入当前的系统日期\nAlt+T 插入当前的系统时间\n选中文本后按下Enter键，可将所选的文本加入预定义列表内";
-
-		return text;
+		return allInfo.keyinfo;
 	}
 
 	/**
@@ -3493,11 +3533,24 @@ class fileInfo {
 		this.showname = showname;
 	}
 }
-class markstat{
-	String text;
-	int count;
+class markstat implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public String text;
+	public int count;
+	public boolean visible;
 	public markstat(String text, int count){
 		this.text = text;
 		this.count = count;
+	}
+}
+class hasinfo{
+	boolean ishas;
+	int index;
+	public hasinfo(boolean ishas,int index){
+		this.ishas = ishas;
+		this.index = index;
 	}
 }

@@ -1786,6 +1786,22 @@ public class black extends mud {
 
 			}
 		});
+		MenuItem clearmarkstat = ba.getMenuItem(markmenu, "清空预定义文件调频数据", SWT.NONE);
+		clearmarkstat.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				ba.markstat.removeAll(ba.markstat);
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
 		MenuItem writemark = ba.getMenuItem(markmenu, "保存预定义文件中的改动", SWT.None);
 		writemark.addSelectionListener(new SelectionListener() {
 
@@ -2037,7 +2053,7 @@ public class black extends mud {
 		menuItem_2.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ba.getMessageBox("键盘快捷键", ba.keyinfo());
+				ba.getBMessageBox("键盘快捷键", ba.keyinfo());
 			}
 		});
 		menuItem_2.setText("\u5FEB\u6377\u952E\u6982\u89C8");
