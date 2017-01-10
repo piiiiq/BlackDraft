@@ -2252,6 +2252,28 @@ public class blackAction implements Serializable {
 		}
 		markstat = al;
 	}
+	List<TextRegion> setindexOfMarkstatBy(){
+		if(b.text.getCaretOffset() > 0){
+			String text = b.text.getText(0, b.text.getCaretOffset()-1);
+			List<TextRegion> al = markTextData;
+			List<TextRegion> al_new = new ArrayList<TextRegion>();
+			while(al.size() > 0){
+				int max = 0;
+				int maxindex = 0;
+				for(int i=0;i<al.size();i++){
+					String str = al.get(i).text;
+					int index = text.lastIndexOf(str);
+					if(index > max){
+						max = index;
+						maxindex = i;
+					}
+				}
+				al_new.add(al.get(maxindex));
+				al.remove(maxindex);
+			}
+			return al_new;
+		}else return null;
+	}
 	void findinMark() {
 		if (marktext == null || marktext.equals(""))
 			readMarkFile();
@@ -2277,7 +2299,11 @@ public class blackAction implements Serializable {
 			String line = b.text.getLine(b.text.getLineAtOffset(b.text.getCaretOffset()));
 			String doc = b.text.getText();
 			hasinfo info = null;
-			Iterator<TextRegion> it_tr = markTextData.iterator();
+			List<TextRegion> al = setindexOfMarkstatBy();
+			Iterator<TextRegion> it_tr = null;
+			if(al != null) it_tr = al.iterator();
+			else it_tr = markTextData.iterator();
+			
 			while (it_tr.hasNext()) {
 				TextRegion tr = it_tr.next();
 				// 如果当前预定义条目中包含编辑器光标前一个字符，就将其放到前面
