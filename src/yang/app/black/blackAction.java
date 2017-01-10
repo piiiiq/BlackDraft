@@ -2175,18 +2175,30 @@ public class blackAction implements Serializable {
 
 		markTextData = list;
 		//校验预定义频率arraylist里的条目是否在预定义文件中存在，如果不存在则将条目删除
-		for(int a=0;a<markstat.size();a++){
+		ishasInMarkdata();
+	}
+	/**
+	 * 检查预定义数据里是否存在调频数据里的条目，如果不存在则将调频数据里的条目删除
+	 */
+	void ishasInMarkdata(){
+		Iterator<markstat> it_stat = markstat.iterator();
+		while(it_stat.hasNext()){
+			String str = it_stat.next().text;
 			boolean ishas = false;
-			markstat ms = markstat.get(a);
-			for(int i=0;i<markTextData.size();i++){
-				String str = markTextData.get(i).text;
-				if(ms.text.equals(str)){
+			Iterator<TextRegion> it_mark = markTextData.iterator();
+			while(it_mark.hasNext()){
+				String text = it_mark.next().text;
+				if(text.equals(str)){
 					ishas = true;
 					break;
 				}
 			}
-			if(!ishas) markstat.remove(a);
+			if(!ishas){
+				it_stat.remove();
+			}
 		}
+		
+		
 	}
 	/**
 	 * 判断给定的字符串是否在频率统计arraylist中存在
