@@ -348,6 +348,7 @@ public class black extends mud {
 	 */
 	public black() {
 		super(Display.getDefault(), SWT.SHELL_TRIM);
+		log.setLayoutData(new FormData());
 		// if (safe.isSafe())
 		// create();
 		// else
@@ -388,7 +389,7 @@ public class black extends mud {
 		t.start();
 		create();
 		ba.debugMode(ba.isDebugMode(), true);
-		// createMenuBar();
+		 createMenuBar();
 		// createVscrollBar(text,this);
 	}
 
@@ -1688,6 +1689,23 @@ public class black extends mud {
 		});
 		mntmctrlt_1.setText("\u5F53\u524D\u65F6\u95F4\tAlt+T");
 
+		MenuItem menuItem_git = new MenuItem(menu, SWT.CASCADE);
+		menuItem_git.setText("Git");
+
+		Menu menu_git = new Menu(menuItem_git);
+		menuItem_git.setMenu(menu_git);
+		
+		MenuItem mntmgit = new MenuItem(menu_git, SWT.NONE);
+		mntmgit.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				gitInfo gitinfo = new gitInfo(black.this, SWT.DIALOG_TRIM);
+				gitinfo.open();
+			}
+		});
+		mntmgit.setText("\u4E3A\u6B64\u9879\u76EE\u542F\u7528Git");
+		
+		
 		MenuItem menuItem_8 = new MenuItem(menu, SWT.CASCADE);
 		menuItem_8.setText("\u5DE5\u5177");
 

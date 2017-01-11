@@ -98,6 +98,7 @@ import yang.demo.allPurpose.autoDO;
 import yang.demo.allPurpose.cfg_read_write;
 import yang.demo.allPurpose.debug;
 import yang.demo.allPurpose.fileTool;
+import yang.demo.allPurpose.gitTool;
 import yang.demo.allPurpose.io;
 import yang.demo.allPurpose.isYourNeedFile;
 import yang.demo.allPurpose.stringAction;
@@ -2286,6 +2287,22 @@ public class blackAction implements Serializable {
 				findi = new findinfo(b.wv, b, SWT.None);
 			findi.insertAction = findi.none;
 			findi.drawstrAction(findi.insertAction);
+			findi.tree.addSelectionListener(new SelectionListener() {
+				
+				@Override
+				public void widgetSelected(SelectionEvent arg0) {
+					// TODO Auto-generated method stub
+					TreeItem ti = (TreeItem)arg0.item;
+					ti.setBackground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+				}
+				
+				@Override
+				public void widgetDefaultSelected(SelectionEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
 			
 			//对预定义文件中的条目的顺序进行分组
 			int index = 0;
@@ -2341,8 +2358,26 @@ public class blackAction implements Serializable {
 				if(stat.visible){
 					TextRegion trstat = new TextRegion(stat.text, 0, 0);
 					TreeItem ti = new TreeItem(findi.tree, SWT.None);
+					if(stat.count > 1 && stat.count <= 5){
+						ti.setBackground(SWTResourceManager.getColor(250,254,90));
+						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					}
+					else if(stat.count > 5 && stat.count <= 10){
+						ti.setBackground(SWTResourceManager.getColor(249,254,56));
+						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					}
+					else if(stat.count > 10 && stat.count <= 20){
+						ti.setBackground(SWTResourceManager.getColor(248,254,10));
+						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					}
+					else if(stat.count > 20){
+						ti.setBackground(SWTResourceManager.getColor(191,197,1));
+						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					}else{
+						ti.setBackground(SWTResourceManager.getColor(251,254,126));
+						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					}
 					ti.setFont(SWTResourceManager.getFont("微软雅黑", 11, SWT.BOLD));
-					ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 					ti.setText(trstat.text+" (上次所选)"+"("+markstat.get(markstat.size()-1).count+")");
 					ti.setData("textregion", trstat);
 					ti.setData("index", index);
@@ -2355,8 +2390,26 @@ public class blackAction implements Serializable {
 				if(stat.visible){
 					TextRegion trstat = new TextRegion(markstat.get(i).text, 0, 0);
 					TreeItem ti = new TreeItem(findi.tree, SWT.None);
+					if(stat.count > 1 && stat.count <= 5){
+						ti.setBackground(SWTResourceManager.getColor(250,254,90));
+						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					}
+					else if(stat.count > 5 && stat.count <= 10){
+						ti.setBackground(SWTResourceManager.getColor(249,254,56));
+						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					}
+					else if(stat.count > 10 && stat.count <= 20){
+						ti.setBackground(SWTResourceManager.getColor(248,254,10));
+						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					}
+					else if(stat.count > 20){
+						ti.setBackground(SWTResourceManager.getColor(191,197,1));
+						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					}else{
+						ti.setBackground(SWTResourceManager.getColor(251,254,126));
+						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					}
 					ti.setFont(SWTResourceManager.getFont("微软雅黑", 11, SWT.BOLD));
-					ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 					ti.setText(trstat.text+"("+markstat.get(i).count+")");
 					ti.setData("textregion", trstat);
 					ti.setData("index", index);
@@ -2402,7 +2455,23 @@ public class blackAction implements Serializable {
 			findi.setVisible(true);
 		}
 	}
-
+	public void saveGitInfo(String host,String username,String password){
+		b.projectProperties.setProperty("GitHost", host);
+		b.projectProperties.setProperty("GitUsername", username);
+		b.projectProperties.setProperty("GitPassword", password);
+		saveProjectCFG();
+	}
+	/**
+	 * 为当前编辑的项目设置git目录
+	 */
+	public void setingGit(){
+		try {
+			gitTool.createGitRepository(b.projectFile.getParent());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public void findInfo() {
 		if (b.text.getSelectionCount() == 0) {
 			Runnable runn = new Runnable() {
@@ -2429,6 +2498,7 @@ public class blackAction implements Serializable {
 		}
 
 	}
+
 
 	public String[] getALLFonts() {
 		FontData[] fonts = b.getDisplay().getFontList(null, true);

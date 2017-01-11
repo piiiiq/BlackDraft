@@ -17,6 +17,10 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.TextLayout;
@@ -25,6 +29,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import yang.demo.allPurpose.debug;
@@ -61,7 +66,7 @@ public class findinfo extends Shell implements Serializable{
 		this.b = b;
 		createContents();
 		drawstrAction(insertAction);
-
+		
 		if(b.text != null){
 			text_oldKeyArrowUpAction = b.text.getKeyBinding(SWT.ARROW_UP);
 			text_oldKeyArrowDownAction = b.text.getKeyBinding(SWT.ARROW_DOWN);
