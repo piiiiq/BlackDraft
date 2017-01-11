@@ -389,7 +389,7 @@ public class black extends mud {
 		t.start();
 		create();
 		ba.debugMode(ba.isDebugMode(), true);
-		 createMenuBar();
+		// createMenuBar();
 		// createVscrollBar(text,this);
 	}
 
@@ -1054,7 +1054,7 @@ public class black extends mud {
 		treeItem_1.setExpanded(true);
 
 		// createButtonPanel();
-		// createMenuBar();
+		//createMenuBar();
 		if (ba.isShowMenuBar())
 			createMenuBar();
 	}
@@ -1704,6 +1704,35 @@ public class black extends mud {
 			}
 		});
 		mntmgit.setText("\u4E3A\u6B64\u9879\u76EE\u542F\u7528Git");
+		
+		new MenuItem(menu_git, SWT.SEPARATOR);
+		
+		MenuItem menuItem_10 = new MenuItem(menu_git, SWT.NONE);
+		menuItem_10.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ba.commit(null);
+			}
+		});
+		menuItem_10.setText("\u5C06\u9879\u76EE\u66F4\u6539\u63D0\u4EA4\u5230\u672C\u5730\u4ED3\u5E93");
+		
+		MenuItem menuItem_9 = new MenuItem(menu_git, SWT.NONE);
+		menuItem_9.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ba.push();
+			}
+		});
+		menuItem_9.setText("\u5C06\u672C\u5730\u4ED3\u5E93\u7684\u66F4\u6539\u4E0A\u63A8\u81F3\u8FDC\u7A0B\u4ED3\u5E93");
+		
+		MenuItem menuItem_12 = new MenuItem(menu_git, SWT.NONE);
+		menuItem_12.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ba.gitWorking();
+			}
+		});
+		menuItem_12.setText("\u63D0\u4EA4\u9879\u76EE\u66F4\u6539\u5E76\u4E0A\u63A8\u81F3\u8FDC\u7A0B\u4ED3\u5E93");
 		
 		
 		MenuItem menuItem_8 = new MenuItem(menu, SWT.CASCADE);

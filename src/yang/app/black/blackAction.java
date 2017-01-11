@@ -55,6 +55,9 @@ import org.eclipse.jface.text.MarkSelection;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.text.TextViewerUndoManager;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
@@ -2464,13 +2467,62 @@ public class blackAction implements Serializable {
 	/**
 	 * 为当前编辑的项目设置git目录
 	 */
-	public void setingGit(){
+	public void setGitRespositoryPath(){
 		try {
 			gitTool.createGitRepository(b.projectFile.getParent());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			b.log.appendLog(e.getMessage(), null, false);
+		} catch(IllegalStateException e){
+			b.log.appendLog(e.getMessage(), null, false);
 		}
+	}
+	public void commit(String message){
+		setGitRespositoryPath();
+		String mess = null;
+		if(message == null)
+			mess = time.getCurrentDate("-")+"("+time.getCurrentTime().replace(":", "点")+"分)"+"项目备份";
+		else mess = message;
+		try {
+			if(message == null)
+			gitTool.commit(b.projectFile.getParent(), mess);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			b.log.appendLog(e.getMessage(), null, false);
+		} catch (GitAPIException e) {
+			// TODO Auto-generated catch block
+			b.log.appendLog(e.getMessage(), null, false);
+		}
+	}
+	public void push(){
+		String host = b.projectProperties.getProperty("GitHost");
+		String username = b.projectProperties.getProperty("GitUsername");
+		String password = b.projectProperties.getProperty("GitPassword");
+		if(host == null || username == null || password == null) return;
+		try {
+			gitTool.pushToRemote(b.projectFile.getParent(),host, username, password, true);
+		} catch (InvalidRemoteException e) {
+			// TODO Auto-generated catch block
+			b.log.appendLog(e.getMessage(), null, false);
+		} catch (TransportException e) {
+			// TODO Auto-generated catch block
+			b.log.appendLog(e.getMessage(), null, false);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			b.log.appendLog(e.getMessage(), null, false);
+		} catch (GitAPIException e) {
+			// TODO Auto-generated catch block
+			b.log.appendLog(e.getMessage(), null, false);
+		}
+	}
+	public void gitWorking(){
+		String host = b.projectProperties.getProperty("GitHost");
+		String username = b.projectProperties.getProperty("GitUsername");
+		String password = b.projectProperties.getProperty("GitPassword");
+		if(host == null || username == null || password == null) return;
+		commit(null);
+		push();
+		
 	}
 	public void findInfo() {
 		if (b.text.getSelectionCount() == 0) {
