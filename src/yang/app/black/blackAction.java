@@ -42,18 +42,10 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFRun.FontCharRange;
 import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.FindReplaceDocumentAdapter;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IDocumentListener;
-import org.eclipse.jface.text.IDocumentPartitioner;
-import org.eclipse.jface.text.IDocumentPartitioningListener;
-import org.eclipse.jface.text.IPositionUpdater;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITypedRegion;
-import org.eclipse.jface.text.MarkSelection;
-import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.text.TextViewerUndoManager;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -78,8 +70,6 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -91,7 +81,6 @@ import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.FontDialog;
@@ -100,7 +89,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Slider;
@@ -108,13 +96,10 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import yang.app.black.starter.blackMain;
-import yang.demo.allPurpose.autoDO;
 import yang.demo.allPurpose.cfg_read_write;
-import yang.demo.allPurpose.debug;
 import yang.demo.allPurpose.fileTool;
 import yang.demo.allPurpose.gitTool;
 import yang.demo.allPurpose.io;
-import yang.demo.allPurpose.isYourNeedFile;
 import yang.demo.allPurpose.stringAction;
 import yang.demo.allPurpose.time;
 import yang.demo.mail.SendMailBySSL;
@@ -2558,6 +2543,13 @@ public class blackAction implements Serializable {
 			getBMessageBox("更改的文件", sb.toString());
 		}
 		return commit;
+	}
+	public boolean gitSetUp(){
+		String host = b.projectProperties.getProperty("GitHost");
+		String username = b.projectProperties.getProperty("GitUsername");
+		String password = b.projectProperties.getProperty("GitPassword");
+		if(host == null || username == null || password == null) return false;
+		else return true;
 	}
 	public Iterable<PushResult> push(boolean quiet){
 		Iterable<PushResult> pushToRemote = null;

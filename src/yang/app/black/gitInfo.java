@@ -60,7 +60,7 @@ public class gitInfo extends Dialog {
 		shell = new Shell(getParent(), getStyle());
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		shell.setSize(495, 234);
-		shell.setText("\u914D\u7F6EGit");
+		shell.setText("≈‰÷√Git‘∂≥Ã≤÷ø‚");
 		windowLocation.dialogLocation(getParent(), shell);
 		String host_ = b.projectProperties.getProperty("GitHost");
 		String username_ = b.projectProperties.getProperty("GitUsername");
@@ -73,7 +73,7 @@ public class gitInfo extends Dialog {
 		
 		path = new Text(group_1, SWT.BORDER);
 		path.setBounds(138, 29, 321, 21);
-		if(path != null)
+		if(host_ != null)
 			path.setText(host_);
 		
 		Label lblGithttps = new Label(group_1, SWT.NONE);

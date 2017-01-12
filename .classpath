@@ -23,12 +23,12 @@
 	<classpathentry kind="lib" path="D:/Apps/Unpack/java-lib/javamail-1.4.7/mail.jar"/>
 	<classpathentry kind="lib" path="D:/Apps/Unpack/java-lib/ansj_seg-5.0.2-all-in-one.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="D:/Apps/Unpack/java-lib/org.eclipse.jgit-4.6.0.201612231935-r .jar"/>
 	<classpathentry kind="lib" path="D:/Apps/Unpack/java-lib/slf4j-1.6.0/jcl-over-slf4j-1.6.0.jar"/>
 	<classpathentry kind="lib" path="D:/Apps/Unpack/java-lib/slf4j-1.6.0/jul-to-slf4j-1.6.0.jar"/>
 	<classpathentry kind="lib" path="D:/Apps/Unpack/java-lib/slf4j-1.6.0/log4j-over-slf4j-1.6.0.jar"/>
 	<classpathentry kind="lib" path="D:/Apps/Unpack/java-lib/slf4j-1.6.0/slf4j-api-1.6.0.jar"/>
 	<classpathentry kind="lib" path="D:/Apps/Unpack/java-lib/slf4j-1.6.0/slf4j-jdk14-1.6.0.jar"/>
 	<classpathentry kind="lib" path="D:/Apps/Unpack/java-lib/com.jcraft.jsch_0.1.31.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/java-lib/org.eclipse.jgit-4.6.0.201612231935-r.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

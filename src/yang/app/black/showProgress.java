@@ -61,8 +61,8 @@ public abstract class showProgress extends Dialog {
 						progressBar.setSelection(b.ba.ProgressValue);
 						label.setText(b.ba.progressMessage);
 						if(b.ba.ProgressValue == 100){
-							actionInOtherThread();
 							doing.stop();
+							actionInOtherThread();
 							if(!shell.isDisposed()){
 								progressBar.setSelection(b.ba.ProgressValue);
 								label.setText(b.ba.progressMessage);

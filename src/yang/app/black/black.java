@@ -29,6 +29,8 @@ import org.eclipse.swt.events.ArmEvent;
 import org.eclipse.swt.events.ArmListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.events.MenuListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -125,6 +127,7 @@ public class black extends mud {
 	File lastOpenedFile;
 	String updateinfo;
 	boolean donotChangeTitleBar;
+	public  MenuItem menuItem_git;
 
 	public static String getAppVersion() {
 		return appVersion;
@@ -1689,10 +1692,34 @@ public class black extends mud {
 		});
 		mntmctrlt_1.setText("\u5F53\u524D\u65F6\u95F4\tAlt+T");
 
-		MenuItem menuItem_git = new MenuItem(menu, SWT.CASCADE);
+		menuItem_git = new MenuItem(menu, SWT.CASCADE);
 		menuItem_git.setText("Git");
 
 		Menu menu_git = new Menu(menuItem_git);
+		menu_git.addMenuListener(new MenuListener() {
+			
+			@Override
+			public void menuShown(MenuEvent arg0) {
+				// TODO Auto-generated method stub
+				if(!ba.gitSetUp()){
+					MenuItem[] items = menu_git.getItems();
+					for(int i=0;i<items.length;i++){
+						if(i>0)items[i].setEnabled(false);
+					}
+				}else{
+					MenuItem[] items = menu_git.getItems();
+					for(int i=0;i<items.length;i++){
+						if(i>0)items[i].setEnabled(true);
+					}
+				}
+			}
+			
+			@Override
+			public void menuHidden(MenuEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		menuItem_git.setMenu(menu_git);
 		
 		MenuItem mntmgit = new MenuItem(menu_git, SWT.NONE);
@@ -1703,7 +1730,7 @@ public class black extends mud {
 				gitinfo.open();
 			}
 		});
-		mntmgit.setText("\u4E3A\u6B64\u9879\u76EE\u542F\u7528Git");
+		mntmgit.setText("\u4E3A\u6B64\u9879\u76EE\u914D\u7F6EGit\u8FDC\u7A0B\u4ED3\u5E93");
 		
 		new MenuItem(menu_git, SWT.SEPARATOR);
 		
@@ -1711,6 +1738,7 @@ public class black extends mud {
 		menuItem_10.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				if(ba.gitSetUp())
 				ba.commit(null,false);
 			}
 		});
@@ -1720,6 +1748,7 @@ public class black extends mud {
 		menuItem_9.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				if(ba.gitSetUp())
 				ba.push(false);
 			}
 		});
@@ -1729,6 +1758,7 @@ public class black extends mud {
 		menuItem_12.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				if(ba.gitSetUp())
 				ba.gitWorking();
 			}
 		});
@@ -1740,7 +1770,8 @@ public class black extends mud {
 		menuItem_13.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				new gitBranchInfo(black.this, SWT.DIALOG_TRIM).open();
+				if(ba.gitSetUp())
+					new gitBranchInfo(black.this, SWT.DIALOG_TRIM).open();
 			}
 		});
 		menuItem_13.setText("\u5206\u652F\u64CD\u4F5C");

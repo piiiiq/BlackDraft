@@ -32,6 +32,8 @@ import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.events.MenuListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
@@ -80,7 +82,6 @@ public class blackTextArea implements Serializable {
 	String linestr;
 	checkKey keyenter;
 	int lastcaretOffset, caretOffset, keycode;
-	MouseListener forCharCount;
 	int currentEditLine;
 	CaretListener cl = null;
 	ScrollBar scrollbar;
@@ -92,7 +93,7 @@ public class blackTextArea implements Serializable {
 		this.st = st;
 		dropText();
 		st.addExtendedModifyListener(new ExtendedModifyListener() {
-			
+
 			@Override
 			public void modifyText(ExtendedModifyEvent arg0) {
 				// TODO Auto-generated method stub
@@ -104,70 +105,70 @@ public class blackTextArea implements Serializable {
 		addDefaultKeyListener();
 		addMenu(st);
 		addModifyListener(st);
-		
-		
-//		st.getVerticalBar().addSelectionListener(new SelectionListener() {
-//			
-//			@Override
-//			public void widgetSelected(SelectionEvent arg0) {
-//				// TODO Auto-generated method stub
-//				if(st.getTopPixel() == 0 && st.getTopMargin() != 100){
-//					st.setTopMargin(100);
-//				}else if(st.getTopPixel() != 0 && st.getTopMargin() != 0)st.setTopMargin(0);
-//			}
-//			
-//			@Override
-//			public void widgetDefaultSelected(SelectionEvent arg0) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//		});
-	
+
+		// st.getVerticalBar().addSelectionListener(new SelectionListener() {
+		//
+		// @Override
+		// public void widgetSelected(SelectionEvent arg0) {
+		// // TODO Auto-generated method stub
+		// if(st.getTopPixel() == 0 && st.getTopMargin() != 100){
+		// st.setTopMargin(100);
+		// }else if(st.getTopPixel() != 0 && st.getTopMargin() !=
+		// 0)st.setTopMargin(0);
+		// }
+		//
+		// @Override
+		// public void widgetDefaultSelected(SelectionEvent arg0) {
+		// // TODO Auto-generated method stub
+		//
+		// }
+		// });
+
 		st.setKeyBinding(SWT.TAB, -1);
 		st.setKeyBinding(SWT.ESC, -1);
 		st.setKeyBinding(SWT.CTRL | 'm', -1);
 		st.setKeyBinding(SWT.HOME, ST.TEXT_START);
 		st.setKeyBinding(SWT.END, -1);
 		st.setKeyBinding(13, -1);
-		st.setKeyBinding(16777225, -1);//屏蔽改写模式按键
-		
-//		st.addKeyListener(new KeyListener() {
-//			
-//			@Override
-//			public void keyReleased(KeyEvent arg0) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//			@Override
-//			public void keyPressed(KeyEvent arg0) {
-//				// TODO Auto-generated method stub
-//				System.out.println(arg0.keyCode);
-//			}
-//		});
-		
+		st.setKeyBinding(16777225, -1);// 屏蔽改写模式按键
+
+		// st.addKeyListener(new KeyListener() {
+		//
+		// @Override
+		// public void keyReleased(KeyEvent arg0) {
+		// // TODO Auto-generated method stub
+		//
+		// }
+		//
+		// @Override
+		// public void keyPressed(KeyEvent arg0) {
+		// // TODO Auto-generated method stub
+		// System.out.println(arg0.keyCode);
+		// }
+		// });
+
 		ck_enter = new checkKey(13) {
-			
+
 			@Override
 			public void action() {
 				// TODO Auto-generated method stub
-				if(st.getSelectionText().equals("")){
+				if (st.getSelectionText().equals("")) {
 					st.setRedraw(false);
 					black.ba.insertText("\n", st);
 					scrollForTypeMode();
 					st.setRedraw(true);
-				}else{
+				} else {
 					if (!black.getCurrentEditFile().equals(black.ba.getRealFile("预定义")))
 						black.ba.addTextToMarkFile(black.text.getSelectionText());
 				}
-				
+
 			}
 		};
 		addKeyAction(ck_enter);
-		
+
 		st.setKeyBinding(8, -1);
 		addKeyAction(new checkKey(8) {
-			
+
 			@Override
 			public void action() {
 				// TODO Auto-generated method stub
@@ -177,7 +178,7 @@ public class blackTextArea implements Serializable {
 				st.setRedraw(true);
 			}
 		});
-		
+
 		scrollbar = st.getVerticalBar();
 		addKeyAction(new checkKey(SWT.TAB) {
 
@@ -189,75 +190,78 @@ public class blackTextArea implements Serializable {
 					black.ba.findInfo();
 			}
 		});
-		
+
 		keyAction.addKeyAction(this);
 		replaceMode();
-		
+
 		st.addPaintListener(new PaintListener() {
-			
+
 			@Override
 			public void paintControl(PaintEvent arg0) {
 				// TODO Auto-generated method stub
-				if(st.getSelectionCount() != 0)
-					black.label_4.setText(black.ba.getCharsCount(st.getSelectionText())+"/"+black.ba.getCharsCount());	
-				else{
-					if(black.label_4.getText().indexOf("/") != -1)
+				if (st.getSelectionCount() != 0)
+					black.label_4
+							.setText(black.ba.getCharsCount(st.getSelectionText()) + "/" + black.ba.getCharsCount());
+				else {
+					if (black.label_4.getText().indexOf("/") != -1)
 						black.label_4.setText(String.valueOf(black.ba.getCharsCount()));
 				}
 			}
 		});
 	}
-	public void replaceMode(){
+
+	public void replaceMode() {
 		st.addMouseListener(new MouseListener() {
-			
+
 			@Override
 			public void mouseUp(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void mouseDown(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				if(arg0.stateMask == SWT.CONTROL)
-					black.ba.replaceMode(st, new Point(arg0.x,arg0.y));
+				if (arg0.stateMask == SWT.CONTROL)
+					black.ba.replaceMode(st, new Point(arg0.x, arg0.y));
 			}
-			
+
 			@Override
 			public void mouseDoubleClick(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 		st.addMouseTrackListener(new MouseTrackListener() {
-			
+
 			@Override
 			public void mouseHover(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				if(replaceMode)
-				if(arg0.stateMask == SWT.CONTROL)
-					black.ba.replaceMode(st, new Point(arg0.x,arg0.y));
+				if (replaceMode)
+					if (arg0.stateMask == SWT.CONTROL)
+						black.ba.replaceMode(st, new Point(arg0.x, arg0.y));
 			}
-			
+
 			@Override
 			public void mouseExit(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void mouseEnter(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 	}
-	
-	public void re(){
-		int h = st.getClientArea().height/2;
-		scrollbar.setMaximum(scrollbar.getMaximum()+h);
-		
+
+	public void re() {
+		int h = st.getClientArea().height / 2;
+		scrollbar.setMaximum(scrollbar.getMaximum() + h);
+
 	}
+
 	public void test() {
 		if (cl == null) {
 			st.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
@@ -390,6 +394,7 @@ public class blackTextArea implements Serializable {
 		normalMode();
 
 	}
+
 	public void addCaret() {
 		if (Boolean.valueOf(black.appProperties.getProperty("CaretV", "true")))
 			caret = new mycaret(st, SWT.VERTICAL);
@@ -519,7 +524,7 @@ public class blackTextArea implements Serializable {
 									st.replaceTextRange(getLineOffset() + command_tr.start,
 											command_tr.end - command_tr.start, "");
 									com.action(command_tr);
-									
+
 								} else {
 									TextRegion tr = cheakDocument.subString(linestr,
 											command_tr.start + command_tr.text.length(), " ");
@@ -564,10 +569,10 @@ public class blackTextArea implements Serializable {
 		return st.getOffsetAtLine(st.getLineAtOffset(st.getCaretOffset()));
 	}
 
-//	public void insertForCommandListener(String text, int start, int end) {
-//		st.replaceTextRange(start, end - start, text);
-//		st.setCaretOffset(start + text.length());
-//	}
+	// public void insertForCommandListener(String text, int start, int end) {
+	// st.replaceTextRange(start, end - start, text);
+	// st.setCaretOffset(start + text.length());
+	// }
 
 	public void showMark() {
 		int lineindex = st.getLineAtOffset(st.getCaretOffset());
@@ -590,6 +595,22 @@ public class blackTextArea implements Serializable {
 		// st.setBackground(SWTResourceManager.getColor(175, 205, 133));
 		st.getVerticalBar().setVisible(false);
 		st.setFocus();
+		MenuItem git = black.ba.getMenuItem(st.getMenu(), "提交更改到Git远程仓库", SWT.NONE);
+		git.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				black.ba.gitWorking();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
 		black.ba.getMenuItem(st.getMenu(), "", SWT.SEPARATOR);
 		black.ba.getMenuItem(st.getMenu(), "退出写作视图	ESC", SWT.None).addSelectionListener(new SelectionListener() {
 
@@ -623,34 +644,28 @@ public class blackTextArea implements Serializable {
 
 			}
 		});
+		st.getMenu().addMenuListener(new MenuListener() {
 
-		forCharCount = new MouseListener() {
 			@Override
-			public void mouseUp(MouseEvent arg0) {
+			public void menuShown(MenuEvent arg0) {
 				// TODO Auto-generated method stub
-				if (!mi2.isDisposed()) {
-					if (arg0.button == 3) {
-						mi2.setText("字符数	" + black.ba.getCharsCount() + "个字");
-					}
-				} else {
-					if (forCharCount != null)
-						st.removeMouseListener(forCharCount);
+				if (st.getSelectionCount() == 0)
+					mi2.setText("字符数	" + black.ba.getCharsCount() + "个字");
+				else {
+					int count = black.ba.getCharsCount(st.getSelectionText());
+					mi2.setText("字符数	" + count + "/" + black.ba.getCharsCount());
 				}
+				if(black.ba.gitSetUp()) git.setEnabled(true);
+				else git.setEnabled(false);
 			}
 
 			@Override
-			public void mouseDown(MouseEvent arg0) {
+			public void menuHidden(MenuEvent arg0) {
 				// TODO Auto-generated method stub
 
 			}
+		});
 
-			@Override
-			public void mouseDoubleClick(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-		};
-		st.addMouseListener(forCharCount);
 	}
 
 	/**
@@ -688,7 +703,6 @@ public class blackTextArea implements Serializable {
 			};
 
 		st.addMouseListener(forStyledPanel);
-
 	}
 
 	/**
@@ -739,12 +753,13 @@ public class blackTextArea implements Serializable {
 				int line = st.getContent().getLineAtOffset(wordIndex);
 				st.setTopIndex(line);
 				wordLength = ir.getLength();
-				st.setSelection(wordIndex, wordIndex+wordLength);
-//				StyleRange sr = new StyleRange(wordIndex, wordLength, black.color_textBackground,
-//						org.eclipse.wb.swt.SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN));
-//				// 保存该字符加亮前的风格
-//				oldsr = st.getStyleRanges(wordIndex, wordLength);
-//				st.setStyleRange(sr);
+				st.setSelection(wordIndex, wordIndex + wordLength);
+				// StyleRange sr = new StyleRange(wordIndex, wordLength,
+				// black.color_textBackground,
+				// org.eclipse.wb.swt.SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN));
+				// // 保存该字符加亮前的风格
+				// oldsr = st.getStyleRanges(wordIndex, wordLength);
+				// st.setStyleRange(sr);
 
 			} else {
 				if (wordIndex == 0)
@@ -799,27 +814,28 @@ public class blackTextArea implements Serializable {
 		try {
 			FindReplaceDocumentAdapter frda = new FindReplaceDocumentAdapter(doc);
 			IRegion ir = new IRegion() {
-				
+
 				@Override
 				public int getOffset() {
 					// TODO Auto-generated method stub
 					return 0;
 				}
-				
+
 				@Override
 				public int getLength() {
 					// TODO Auto-generated method stub
 					return 0;
 				}
 			};
-			while ((ir = frda.find(ir.getOffset()+1, word1, true, caseSensitive, wholeWord, regularExpressions)) != null) {
+			while ((ir = frda.find(ir.getOffset() + 1, word1, true, caseSensitive, wholeWord,
+					regularExpressions)) != null) {
 				frda.replace(word2, regularExpressions);
 				i++;
 			}
 			if (showmessage)
 				black.ba.getMessageBox("查找/替换消息", "替换了" + i + "处");
 			black.ba.setFileChanged();
-			
+
 		} catch (BadLocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -831,9 +847,11 @@ public class blackTextArea implements Serializable {
 		if (!st.isDisposed() && black.ba.posForTypeMode != 0) {
 			int toppixel;
 			if (st.getCaret().getLocation().y > (st.getClientArea().height) / black.ba.posForTypeMode)
-				toppixel = st.getTopPixel() + (st.getCaret().getLocation().y - st.getClientArea().height / black.ba.posForTypeMode);
+				toppixel = st.getTopPixel()
+						+ (st.getCaret().getLocation().y - st.getClientArea().height / black.ba.posForTypeMode);
 			else
-				toppixel = st.getTopPixel() - ((st.getClientArea().height / black.ba.posForTypeMode) - st.getCaret().getLocation().y);
+				toppixel = st.getTopPixel()
+						- ((st.getClientArea().height / black.ba.posForTypeMode) - st.getCaret().getLocation().y);
 
 			// 计算上前编辑的段落的高度是否超过了编辑器高度的一半
 			Point p = black.ba.currentLineOffest();
@@ -899,7 +917,7 @@ public class blackTextArea implements Serializable {
 				black.ba.insertText(time.getCurrentTime(), st);
 			}
 		});
-		
+
 		MenuItem sep = new MenuItem(menu, SWT.SEPARATOR);
 
 		MenuItem mntmNewItem = new MenuItem(menu, SWT.None);
@@ -992,17 +1010,17 @@ public class blackTextArea implements Serializable {
 		MenuItem menu02 = black.ba.getMenuItem(menu, SWT.NONE);
 		menu02.setText("为当前编辑的文档创建副本");
 		menu02.addSelectionListener(new SelectionListener() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
 				black.ba.asCopy();
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 		black.ba.getMenuItem(st.getMenu(), "", SWT.SEPARATOR);
@@ -1231,7 +1249,7 @@ public class blackTextArea implements Serializable {
 			}
 		});
 		addKeyAction(new checkKey(SWT.END) {
-			
+
 			@Override
 			public void action() {
 				// TODO Auto-generated method stub
@@ -1239,35 +1257,37 @@ public class blackTextArea implements Serializable {
 				st.setSelection(black.ba.getEndOffest(st));
 				scrollForTypeMode();
 				st.setRedraw(true);
-				
+
 			}
 		});
-		addKeyAction(new checkKey(SWT.CONTROL|'1') {
-			
+		addKeyAction(new checkKey(SWT.CONTROL | '1') {
+
 			@Override
 			public void action() {
 				// TODO Auto-generated method stub
-				if(black.wv != null && !black.wv.isDisposed()){
-					if(black.wv.getAlpha() == 255)
+				if (black.wv != null && !black.wv.isDisposed()) {
+					if (black.wv.getAlpha() == 255)
 						black.wv.setAlpha(100);
-					else black.wv.setAlpha(255);
+					else
+						black.wv.setAlpha(255);
 				}
 			}
 		});
-		addKeyAction(new checkKey(SWT.CONTROL|'2') {
-			
+		addKeyAction(new checkKey(SWT.CONTROL | '2') {
+
 			@Override
 			public void action() {
 				// TODO Auto-generated method stub
-				if(black.wv != null && !black.wv.isDisposed()){
-					if(black.wv.getBackground().equals(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND)))
+				if (black.wv != null && !black.wv.isDisposed()) {
+					if (black.wv.getBackground().equals(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND)))
 						black.ba.changeColor(black.color_black, black.color_white);
-					else if(black.wv.getBackground().equals(black.color_white))
+					else if (black.wv.getBackground().equals(black.color_white))
 						black.ba.changeColor(black.color_black, black.color_eye);
-					else if(black.wv.getBackground().equals(black.color_eye))
+					else if (black.wv.getBackground().equals(black.color_eye))
 						black.ba.changeColor(black.color_white, black.color_black);
-					else if(black.wv.getBackground().equals(black.color_black))
-						black.ba.changeColor(black.color_black,SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+					else if (black.wv.getBackground().equals(black.color_black))
+						black.ba.changeColor(black.color_black,
+								SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 				}
 			}
 		});
