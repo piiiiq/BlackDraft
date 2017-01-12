@@ -20,6 +20,7 @@ import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -55,9 +56,18 @@ import org.eclipse.jface.text.MarkSelection;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.text.TextViewerUndoManager;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
@@ -90,6 +100,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Slider;
@@ -131,6 +142,9 @@ public class blackAction implements Serializable {
 	public int posForTypeMode = 2;
 	PrintStream errorStream, sysErr;
 	ArrayList<markstat> markstat = new ArrayList<>();
+	int ProgressValue;
+	String progressMessage = "";
+	StringBuilder logsmessage = new StringBuilder();
 
 	public blackAction(black b) {
 		this.b = b;
@@ -2472,58 +2486,290 @@ public class blackAction implements Serializable {
 			gitTool.createGitRepository(b.projectFile.getParent());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			b.log.appendLog(e.getMessage(), null, false);
+			addlogs(e.getMessage());
 		} catch(IllegalStateException e){
-			b.log.appendLog(e.getMessage(), null, false);
+			addlogs(e.getMessage());
+		}
+		try {
+			gitTool.createNewBranch(b.projectProperties.getProperty("projectName"), b.projectFile.getParent());
+		} catch (RefAlreadyExistsException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+			addlogs(e.getMessage());
+		} catch (RefNotFoundException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (InvalidRefNameException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (GitAPIException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
 		}
 	}
-	public void commit(String message){
+	public void changeBranch(){
+		try {
+			gitTool.changeBranch( b.projectFile.getParent(), b.projectProperties.getProperty("projectName"));
+		} catch (RefAlreadyExistsException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (RefNotFoundException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (InvalidRefNameException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (CheckoutConflictException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (GitAPIException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		}
+	}
+	public List<DiffEntry> commit(String message,boolean quiet){
 		setGitRespositoryPath();
+		changeBranch();
 		String mess = null;
+		List<DiffEntry> commit = null;
 		if(message == null)
 			mess = time.getCurrentDate("-")+"("+time.getCurrentTime().replace(":", "点")+"分)"+"项目备份";
 		else mess = message;
 		try {
-			if(message == null)
-			gitTool.commit(b.projectFile.getParent(), mess);
+			commit = gitTool.commit(b.projectFile.getParent(), mess);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			b.log.appendLog(e.getMessage(), null, false);
+			addlogs(e.getMessage());
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			b.log.appendLog(e.getMessage(), null, false);
+			addlogs(e.getMessage());
+		}
+		if(!quiet && commit != null){
+			StringBuilder sb = new StringBuilder();
+			for(DiffEntry diff:commit){
+				sb.append(diff.getNewPath()+"\n");
+			}
+			getBMessageBox("更改的文件", sb.toString());
+		}
+		return commit;
+	}
+	public Iterable<PushResult> push(boolean quiet){
+		Iterable<PushResult> pushToRemote = null;
+		String host = b.projectProperties.getProperty("GitHost");
+		String username = b.projectProperties.getProperty("GitUsername");
+		String password = b.projectProperties.getProperty("GitPassword");
+		if(host == null || username == null || password == null) return pushToRemote;
+		try {
+			pushToRemote = gitTool.pushToRemote(b.projectFile.getParent(),host, username, password, true);
+		} catch (InvalidRemoteException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (TransportException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (GitAPIException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		}
+		if(!quiet && pushToRemote != null){
+			StringBuilder sb = new StringBuilder();
+			for(PushResult pr:pushToRemote){
+				Collection<RemoteRefUpdate> remoteUpdates = pr.getRemoteUpdates();
+				for(RemoteRefUpdate rru:remoteUpdates){
+					sb.append(rru+"\n");
+				}
+			}
+			getBMessageBox("上传结果", sb.toString());
+		}	
+		return pushToRemote;
+	}
+	public Collection<Ref> getAllBranchFromRemote(){
+		String host = b.projectProperties.getProperty("GitHost");
+		String username = b.projectProperties.getProperty("GitUsername");
+		String password = b.projectProperties.getProperty("GitPassword");
+		if(host == null || username == null || password == null) return null;
+		Collection<Ref> allBranchFromRemote = null;
+		try {
+			 allBranchFromRemote = gitTool.getAllBranchFromRemote(host, username, password);
+		} catch (InvalidRemoteException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (TransportException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (GitAPIException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		}
+		return allBranchFromRemote;
+	}
+	public void addlogs(String log){
+		logsmessage.append("["+time.getCurrentDate("-")+" "+time.getCurrentTime()+"] "+log+"\n");
+	}
+	public void deleteBranchFromRemote(String branchName,boolean local){
+		String host = b.projectProperties.getProperty("GitHost");
+		String username = b.projectProperties.getProperty("GitUsername");
+		String password = b.projectProperties.getProperty("GitPassword");
+		if(host == null || username == null || password == null) return;
+		
+		try {
+			gitTool.deleteBranchFromRemote(b.projectFile.getParent(), host, branchName, local,username, password);
+		} catch (InvalidRemoteException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (TransportException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (GitAPIException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
 		}
 	}
-	public void push(){
+	public void copyBranchFromeRemote(String dirpath,String branchName,Collection<String> branchs, boolean all){
+		String host = b.projectProperties.getProperty("GitHost");
+		String username = b.projectProperties.getProperty("GitUsername");
+		String password = b.projectProperties.getProperty("GitPassword");
+		if(host == null || username == null || password == null) return;
+		
+		try {
+			gitTool.CloneFromRemote(dirpath, host, all, branchs,branchName, username, password);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (GitAPIException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+		} catch (JGitInternalException e){
+			addlogs(e.getMessage());
+		}
+	}
+	public void createBranch(String branchName){
 		String host = b.projectProperties.getProperty("GitHost");
 		String username = b.projectProperties.getProperty("GitUsername");
 		String password = b.projectProperties.getProperty("GitPassword");
 		if(host == null || username == null || password == null) return;
 		try {
-			gitTool.pushToRemote(b.projectFile.getParent(),host, username, password, true);
-		} catch (InvalidRemoteException e) {
+			gitTool.createNewBranch(branchName, b.projectFile.getParent());
+		} catch (RefAlreadyExistsException e) {
 			// TODO Auto-generated catch block
-			b.log.appendLog(e.getMessage(), null, false);
-		} catch (TransportException e) {
+			addlogs(e.getMessage());
+			return;
+		} catch (RefNotFoundException e) {
 			// TODO Auto-generated catch block
-			b.log.appendLog(e.getMessage(), null, false);
+			addlogs(e.getMessage());
+			return;
+		} catch (InvalidRefNameException e) {
+			// TODO Auto-generated catch block
+			addlogs(e.getMessage());
+			return;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			b.log.appendLog(e.getMessage(), null, false);
+			addlogs(e.getMessage());
+			return;
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			b.log.appendLog(e.getMessage(), null, false);
+			addlogs(e.getMessage());
+			return;
 		}
+		push(true);
 	}
 	public void gitWorking(){
 		String host = b.projectProperties.getProperty("GitHost");
 		String username = b.projectProperties.getProperty("GitUsername");
 		String password = b.projectProperties.getProperty("GitPassword");
 		if(host == null || username == null || password == null) return;
-		commit(null);
-		push();
+		StringBuilder sb = new StringBuilder();
 		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				b.getDisplay().asyncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						showProgress showPro = new showProgress(b){
+							@Override
+							void actionInOtherThread() {
+								// TODO Auto-generated method stub
+								getBMessageBox("同步结果", sb.toString());
+							}
+
+							@Override
+							void actionWhenOKButtonSelected() {
+								// TODO Auto-generated method stub
+							}
+						};
+						showPro.setTitle("同步至远程仓库");
+						showPro.open();
+					}
+				});
+			}
+		}).start();
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				List<DiffEntry> commit = commit(null,true);
+				progressMessage = "已将项目提交至本地仓库";
+				ProgressValue = 10;
+				progressMessage = "正在将本地仓库更改同步到远程仓库";
+				ProgressValue = 30;
+				Iterable<PushResult> push = push(true);
+				progressMessage = "已将更改同步至远程仓库，开始加载同步结果...";
+				ProgressValue = 70;
+				sb.append("项目中发生更改的文件：\n");
+				if(commit != null)
+					for(DiffEntry diff:commit){
+						sb.append(diff.getNewPath()+"\n");
+					}
+				progressMessage = "已获取文件更改信息，开始获取服务器返回结果...";
+				ProgressValue = 80;
+				sb.append("-------------------\n远程仓库返回值：\n");
+				ArrayList<String> al = new ArrayList<>();
+				int count = 0;
+				if(push != null)
+					for(PushResult pr:push){
+						Collection<RemoteRefUpdate> remoteUpdates = pr.getRemoteUpdates();
+						for(RemoteRefUpdate rru:remoteUpdates){
+							sb.append("远程分支名： "+rru.getRemoteName()+"\n");
+							sb.append("对象ID： "+rru.getNewObjectId()+"\n");
+							sb.append("更改备注： "+rru.getMessage()+"\n");
+							sb.append("是否删除： "+rru.isDelete()+"\n");
+							sb.append("强制更新： "+rru.isForceUpdate()+"\n");
+							sb.append("状态： "+rru.getStatus()+"\n");
+							if(rru.getStatus().toString().equals("OK")){
+								count++;
+								al.add(rru.getRemoteName());
+							}
+						}
+					}
+				sb.append("\n================\n同步的分支：\n");
+				for(String str:al){
+					sb.append(str+"\n");
+				}
+				
+				progressMessage = "同步成功！";
+				ProgressValue = 100;
+			}
+		}).start();
 	}
+	
 	public void findInfo() {
 		if (b.text.getSelectionCount() == 0) {
 			Runnable runn = new Runnable() {

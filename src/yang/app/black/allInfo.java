@@ -14,8 +14,8 @@ public class allInfo {
 			+"\n------------（测试人员）"
 			+ "\nAlice T.S.(aliceasmud@gmail.com)"
 			+"\n------------（Linux版本）",
-		appVersion = "1.31",
-		buildDate = "2017.01.10",
+		appVersion = "1.35",
+		buildDate = "2017.01.12",
 		codeName = "Black - Bradypus pygmaeus(侏三趾树懒，一个仅存于某小岛上的极危物种)",
 		keyinfo = "（此处仅列出重要的快捷键）\nCtrl+~ 产生一个中文人名\nCtrl+1 启用窗口透明（写作视图下有效）"
 				+ "\nCtrl+2 切换页面颜色（写作视图下有效）\nCtrl+3 切换行固定位置（可以将编辑的行固定至屏幕中央或屏幕顶部）"

@@ -19,8 +19,8 @@ import yang.demo.swt.windowLocation;
 public class rename extends Dialog implements Serializable{
 	static final long serialVersionUID = 42L;
 
-	protected Object result;
-	protected Shell shell;
+	protected String result;
+	protected Shell shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 	private Text text;
 	int style;
 	/**
@@ -37,7 +37,7 @@ public class rename extends Dialog implements Serializable{
 	 * Open the dialog.
 	 * @return the result
 	 */
-	public Object open() {
+	public String open() {
 		createContents();
 		shell.open();
 		shell.layout();
@@ -54,7 +54,6 @@ public class rename extends Dialog implements Serializable{
 	 * Create contents of the dialog.
 	 */
 	private void createContents() {
-		shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		shell.setSize(334, 121);
 		shell.setText("\u547D\u540D\u6587\u4EF6");
 		windowLocation.showWindowOnScreenCenter(shell);
@@ -115,5 +114,8 @@ public class rename extends Dialog implements Serializable{
 		button_1.setText("\u786E\u5B9A");
 		button_1.setBounds(152, 55, 80, 27);
 
+	}
+	public void setTitle(String text){
+		shell.setText(text);
 	}
 }

@@ -2,6 +2,7 @@ package yang.app.black;
 
 
 import org.eclipse.jgit.api.*;
+import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
@@ -15,8 +16,10 @@ import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.RefSpec;
+import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.junit.Test;
 
@@ -27,7 +30,9 @@ import yang.demo.allPurpose.yangIO;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -41,50 +46,55 @@ public class test {
     public static String username = "piiiiq";
     public static String password = "nihaoma,.+";
     
-    public static void main(String args[]) throws IOException, JGitInternalException, GitAPIException{
+    public static void main(String args[]) throws IOException, JGitInternalException, GitAPIException, URISyntaxException{
        
-       String path = "d://test//git//testgit";
+       String path = "d://test//git//test01";
         
-    	gitTool.createGitRepository(path);
-  	// gitTool.changeRemoteBranch(path, "testttblack");
-      // gitTool.createGitRepository(path);
-    	try {
-			gitTool.commit(path,time.getCurrentTime()+"测试");
-		} catch (GitAPIException e) {
-			// TODO Auto-generated catch block
-			System.out.println("没有文件匹配");
-		}
-        
-    	
-//    	 git.cloneRepository().setURI(remotePath).setBranch("testttblack")
-//    	 .setDirectory(new File(path)).call();
-//    	 Ref mas = git.getRepository().findRef("testttblack");
-    	// gitTool.CloneFromRemote(path, remotePath, "testttblack", username, password);
-//         git.commit().setAll(true)
-//         	.setMessage("清空")
-//         .call();
-       // gitTool.createNewBranch("testttblack", path);
-    	
-    	//new test().testPush();
-    	//if(mas == null) return;
-    	try {
-			gitTool.pushToRemote(path, remotePath, username, password,true);
-		} catch (InvalidRemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransportException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (GitAPIException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-    	System.out.println("ok");
-    	//t.testPush();
-//    	t.testCreate();
-//    	t.testClone();
+    	//gitTool.createGitRepository(path);
+//       Git git = new Git(new FileRepository(path+"/.git"));
+////       RemoteAddCommand remoteAdd = git.remoteAdd();
+////       remoteAdd.setUri(new URIish(remotePath));
+////       remoteAdd.
+//       
+//       List<Ref> call = git.branchList().setListMode(ListMode.ALL).call();
+//       for(Ref r:call){
+//    	   System.out.println(r);
+//       }
+//    	System.out.println("ok");
+//    	gitTool.commit(path, "ceui");
+//    	gitTool.pushToRemote(path, remotePath, username, password, true);
+//       LsRemoteCommand remoteCommand = Git.lsRemoteRepository();
+//       Collection <Ref> refs = remoteCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
+//                           .setHeads(true)
+//                           .setRemote(remotePath)
+//                           .call();
+//
+//       for (Ref ref : refs) {
+//           System.out.println("Ref: " + ref.getName());
+//           Git git = new Git(new FileRepository(path+"/.git"));
+//           git.branchDelete().setBranchNames(ref.getName()).call();
+//       }
+       //gitTool.CloneFromRemote(path, remotePath, true, null, username, password);
+       Git git = new Git(new FileRepository(path+"/.git"));
+       List<Ref> list = git.branchList().setListMode(ListMode.REMOTE).call();
+       for(Ref f:list){
+    	   System.out.println(f.getName());
+    	   //if(f.getName().indexOf("master") == -1)
+    	   git.branchDelete().setBranchNames(f.getName()).setForce(true).call();
+       }
+       
+       gitTool.pushToRemote(path, remotePath, username, password, true);
+       
+       
+   
+    }
     
+    public void cloneAll(String host) throws InvalidRemoteException, TransportException, GitAPIException{
+    	Git git = Git.cloneRepository().setURI(host).setNoCheckout(true).setCloneAllBranches(true).call();
+    	List<Ref> branches = git.branchList().setListMode( ListMode.REMOTE ).call();
+    	for(Ref r:branches){
+    		System.out.println(r.getName());
+    	}
     }
    
     //---------------

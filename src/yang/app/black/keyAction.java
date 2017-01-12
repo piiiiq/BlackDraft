@@ -182,8 +182,11 @@ public class keyAction {
 			@Override
 			public void action() {
 				// TODO Auto-generated method stub
-				bta.black.log.appendLog("", null, false);
+				if(bta.black.ba.logsmessage.length() == 0)
+					bta.black.log.appendLog("", null, false);
+				else bta.black.log.appendLog(bta.black.ba.logsmessage.toString(),null, false);
 				bta.black.log.open();
+				
 			}
 		});
 		bta.addKeyAction(new checkKey(SWT.CONTROL|'`') {

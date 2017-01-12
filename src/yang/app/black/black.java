@@ -1054,9 +1054,9 @@ public class black extends mud {
 		treeItem_1.setExpanded(true);
 
 		// createButtonPanel();
-		//createMenuBar();
-		if (ba.isShowMenuBar())
-			createMenuBar();
+		createMenuBar();
+//		if (ba.isShowMenuBar())
+//			createMenuBar();
 	}
 
 	public void reOpenLastUsedProject() {
@@ -1711,7 +1711,7 @@ public class black extends mud {
 		menuItem_10.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ba.commit(null);
+				ba.commit(null,false);
 			}
 		});
 		menuItem_10.setText("\u5C06\u9879\u76EE\u66F4\u6539\u63D0\u4EA4\u5230\u672C\u5730\u4ED3\u5E93");
@@ -1720,7 +1720,7 @@ public class black extends mud {
 		menuItem_9.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ba.push();
+				ba.push(false);
 			}
 		});
 		menuItem_9.setText("\u5C06\u672C\u5730\u4ED3\u5E93\u7684\u66F4\u6539\u4E0A\u63A8\u81F3\u8FDC\u7A0B\u4ED3\u5E93");
@@ -1733,6 +1733,17 @@ public class black extends mud {
 			}
 		});
 		menuItem_12.setText("\u63D0\u4EA4\u9879\u76EE\u66F4\u6539\u5E76\u4E0A\u63A8\u81F3\u8FDC\u7A0B\u4ED3\u5E93");
+		
+		new MenuItem(menu_git, SWT.SEPARATOR);
+		
+		MenuItem menuItem_13 = new MenuItem(menu_git, SWT.NONE);
+		menuItem_13.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				new gitBranchInfo(black.this, SWT.DIALOG_TRIM).open();
+			}
+		});
+		menuItem_13.setText("\u5206\u652F\u64CD\u4F5C");
 		
 		
 		MenuItem menuItem_8 = new MenuItem(menu, SWT.CASCADE);
