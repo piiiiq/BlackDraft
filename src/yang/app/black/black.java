@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.text.TextViewerUndoManager;
+import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -1748,8 +1749,41 @@ public class black extends mud {
 		menuItem_9.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if(ba.gitSetUp())
-				ba.push(false);
+				if(ba.gitSetUp()){
+					getDisplay().asyncExec(new Runnable() {
+						
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							new showProgress(black.this,"上传至远程仓库") {
+								
+								@Override
+								void actionWhenOKButtonSelected() {
+									// TODO Auto-generated method stub
+									
+								}
+								
+								@Override
+								void actionInOtherThread() {
+									// TODO Auto-generated method stub
+									
+								}
+							};
+						}
+					});
+					new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							ba.setProgressInfo("连接远程仓库...", 20);
+							String[] info = ba.getGitInfo();
+							Iterable<PushResult> push = ba.push(info[0],info[1],info[2],true);
+							//if(push != null)ba.getBMessageBox(title, text);
+							ba.setProgressInfo("上传完成！", 100);
+						}
+					}).start();
+				}
 			}
 		});
 		menuItem_9.setText("\u5C06\u672C\u5730\u4ED3\u5E93\u7684\u66F4\u6539\u4E0A\u63A8\u81F3\u8FDC\u7A0B\u4ED3\u5E93");
@@ -1758,8 +1792,12 @@ public class black extends mud {
 		menuItem_12.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if(ba.gitSetUp())
-				ba.gitWorking();
+				if(ba.gitSetUp()){
+					String[] gitInfo = ba.getGitInfo();
+					if(gitInfo != null){
+						ba.gitWorking(gitInfo[0],gitInfo[1],gitInfo[2]);
+					}
+				}
 			}
 		});
 		menuItem_12.setText("\u63D0\u4EA4\u9879\u76EE\u66F4\u6539\u5E76\u4E0A\u63A8\u81F3\u8FDC\u7A0B\u4ED3\u5E93");

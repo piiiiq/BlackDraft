@@ -601,7 +601,9 @@ public class blackTextArea implements Serializable {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
-				black.ba.gitWorking();
+				String[] gitInfo = black.ba.getGitInfo();
+				if(gitInfo != null)
+					black.ba.gitWorking(gitInfo[0],gitInfo[1],gitInfo[2]);
 			}
 
 			@Override

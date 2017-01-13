@@ -35,6 +35,18 @@ public abstract class showProgress extends Dialog {
 		b = (black)parent;
 		shell = new Shell(getParent(), getStyle());
 	}
+	/**
+	 * 简化版本构造器，调用构造方法后无需再调用open方法即可打开对话框
+	 * @param parent
+	 * @param title
+	 */
+	public showProgress(Shell parent,String title){
+		super(parent, SWT.DIALOG_TRIM);
+		b = (black)parent;
+		shell = new Shell(getParent(), getStyle());
+		shell.setText(title);
+		open();
+	}
 
 	/**
 	 * Open the dialog.
@@ -58,16 +70,21 @@ public abstract class showProgress extends Dialog {
 							stop();
 							return;
 						}
-						progressBar.setSelection(b.ba.ProgressValue);
+						progressBar.setSelection(b.ba.progressValue);
 						label.setText(b.ba.progressMessage);
-						if(b.ba.ProgressValue == 100){
+						if(b.ba.progressValue == 100){
 							doing.stop();
 							actionInOtherThread();
 							if(!shell.isDisposed()){
-								progressBar.setSelection(b.ba.ProgressValue);
+								progressBar.setSelection(b.ba.progressValue);
 								label.setText(b.ba.progressMessage);
 							}
+							b.ba.progressMessage = "";
+							b.ba.progressValue = 0;
 							dispose();
+						}else if(b.ba.progressBugStop){
+							label.setText(b.ba.progressMessage);
+							progressBar.setSelection(b.ba.progressValue);;
 						}
 					}
 				});
@@ -88,7 +105,7 @@ public abstract class showProgress extends Dialog {
 	 */
 	private void createContents() {
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		shell.setSize(450, 117);
+		shell.setSize(450, 146);
 		windowLocation.dialogLocation(getParent(), shell);
 		progressBar = new ProgressBar(shell, SWT.NONE);
 		progressBar.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
@@ -98,19 +115,24 @@ public abstract class showProgress extends Dialog {
 		label = new Label(shell, SWT.NONE);
 		label.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		label.setAlignment(SWT.CENTER);
-		label.setBounds(10, 33, 424, 15);
+		label.setBounds(10, 33, 424, 43);
 		
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				b.ba.progressMessage = "";
-				b.ba.ProgressValue = 0;
+				
 				actionWhenOKButtonSelected();
+				b.ba.progressMessage = "";
+				b.ba.progressValue = 0;
+				if(b.ba.progressBugStop){
+					b.ba.progressBugStop = false;
+				}
+				doing.stop();
 				dispose();
 			}
 		});
-		btnNewButton.setBounds(359, 53, 75, 25);
+		btnNewButton.setBounds(359, 82, 75, 25);
 		btnNewButton.setText("\u786E\u5B9A");
 
 	}

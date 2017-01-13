@@ -19,8 +19,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -48,16 +50,20 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.text.TextViewerUndoManager;
+import org.eclipse.jgit.api.errors.CannotDeleteCurrentBranchException;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.api.errors.NotMergedException;
 import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.swt.SWT;
@@ -127,8 +133,9 @@ public class blackAction implements Serializable {
 	public int posForTypeMode = 2;
 	PrintStream errorStream, sysErr;
 	ArrayList<markstat> markstat = new ArrayList<>();
-	int ProgressValue;
+	int progressValue;
 	String progressMessage = "";
+	boolean progressBugStop;
 	StringBuilder logsmessage = new StringBuilder();
 
 	public blackAction(black b) {
@@ -2468,31 +2475,31 @@ public class blackAction implements Serializable {
 	 */
 	public void setGitRespositoryPath(){
 		try {
-			gitTool.createGitRepository(b.projectFile.getParent());
+			if(!isHasGitDir())
+				gitTool.createGitRepository(b.projectFile.getParent());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch(IllegalStateException e){
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		}
 		try {
 			gitTool.createNewBranch(b.projectProperties.getProperty("projectName"), b.projectFile.getParent());
 		} catch (RefAlreadyExistsException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (RefNotFoundException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (InvalidRefNameException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		}
 	}
 	public void changeBranch(){
@@ -2500,26 +2507,31 @@ public class blackAction implements Serializable {
 			gitTool.changeBranch( b.projectFile.getParent(), b.projectProperties.getProperty("projectName"));
 		} catch (RefAlreadyExistsException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (RefNotFoundException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (InvalidRefNameException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (CheckoutConflictException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		}
 	}
+	public boolean isHasGitDir(){
+		File dir = new File(b.projectFile.getParent()+"\\.git");
+		if(dir.exists() && dir.list().length > 0) return true;
+		else return false;
+	}
 	public List<DiffEntry> commit(String message,boolean quiet){
-		setGitRespositoryPath();
+		if(!isHasGitDir()) setGitRespositoryPath();
 		changeBranch();
 		String mess = null;
 		List<DiffEntry> commit = null;
@@ -2530,10 +2542,10 @@ public class blackAction implements Serializable {
 			commit = gitTool.commit(b.projectFile.getParent(), mess);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		}
 		if(!quiet && commit != null){
 			StringBuilder sb = new StringBuilder();
@@ -2548,29 +2560,25 @@ public class blackAction implements Serializable {
 		String host = b.projectProperties.getProperty("GitHost");
 		String username = b.projectProperties.getProperty("GitUsername");
 		String password = b.projectProperties.getProperty("GitPassword");
-		if(host == null || username == null || password == null) return false;
-		else return true;
+		if(host != null && username != null && password != null && isHasGitDir()) return true;
+		else return false;
 	}
-	public Iterable<PushResult> push(boolean quiet){
+	public Iterable<PushResult> push(String host,String username,String password,boolean quiet){
 		Iterable<PushResult> pushToRemote = null;
-		String host = b.projectProperties.getProperty("GitHost");
-		String username = b.projectProperties.getProperty("GitUsername");
-		String password = b.projectProperties.getProperty("GitPassword");
-		if(host == null || username == null || password == null) return pushToRemote;
 		try {
 			pushToRemote = gitTool.pushToRemote(b.projectFile.getParent(),host, username, password, true);
 		} catch (InvalidRemoteException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (TransportException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		}
 		if(!quiet && pushToRemote != null){
 			StringBuilder sb = new StringBuilder();
@@ -2584,6 +2592,22 @@ public class blackAction implements Serializable {
 		}	
 		return pushToRemote;
 	}
+	public Iterable<RevCommit> getCommitLogsFormLocalRespository(){
+		Iterable<RevCommit> rev = null;
+		try {
+			rev = gitTool.getCommitInfoFromLocalRespository(b.projectFile.getParent());
+		} catch (NoHeadException e) {
+			// TODO Auto-generated catch block
+			addlogs(null,e);
+		} catch (GitAPIException e) {
+			// TODO Auto-generated catch block
+			addlogs(null,e);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			addlogs(null,e);
+		}
+		return rev;
+	}
 	public Collection<Ref> getAllBranchFromRemote(){
 		String host = b.projectProperties.getProperty("GitHost");
 		String username = b.projectProperties.getProperty("GitUsername");
@@ -2594,19 +2618,31 @@ public class blackAction implements Serializable {
 			 allBranchFromRemote = gitTool.getAllBranchFromRemote(host, username, password);
 		} catch (InvalidRemoteException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (TransportException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		}
 		return allBranchFromRemote;
 	}
-	public void addlogs(String log){
-		logsmessage.append("["+time.getCurrentDate("-")+" "+time.getCurrentTime()+"] "+log+"\n");
+	public void addlogs(String log,Exception e){
+		if(e == null)
+			logsmessage.append("["+time.getCurrentDate("-")+" "+time.getCurrentTime()+"] " + log+"\n");
+		else{
+			logsmessage.append("["+time.getCurrentDate("-")+" "+time.getCurrentTime()+"] " 
+			+ "("+e.getStackTrace()[0].getClassName()+" "
+			+ e.getStackTrace()[0].getMethodName()+" "
+			+ e.getStackTrace()[0].getLineNumber()+"行 ："
+			+ e.getMessage()+"\n");
+			progressMessage = "操作失败: "+e.getMessage();
+			//if(!e.getClass().getSimpleName().equals("IllegalStateException"))
+			progressBugStop = true;
+		}
 	}
+	
 	public void deleteBranchFromRemote(String branchName,boolean local){
 		String host = b.projectProperties.getProperty("GitHost");
 		String username = b.projectProperties.getProperty("GitUsername");
@@ -2617,16 +2653,16 @@ public class blackAction implements Serializable {
 			gitTool.deleteBranchFromRemote(b.projectFile.getParent(), host, branchName, local,username, password);
 		} catch (InvalidRemoteException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (TransportException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		}
 	}
 	public void copyBranchFromeRemote(String dirpath,String branchName,Collection<String> branchs, boolean all){
@@ -2639,12 +2675,12 @@ public class blackAction implements Serializable {
 			gitTool.CloneFromRemote(dirpath, host, all, branchs,branchName, username, password);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		} catch (JGitInternalException e){
-			addlogs(e.getMessage());
+			addlogs(null,e);
 		}
 	}
 	public void createBranch(String branchName){
@@ -2656,34 +2692,47 @@ public class blackAction implements Serializable {
 			gitTool.createNewBranch(branchName, b.projectFile.getParent());
 		} catch (RefAlreadyExistsException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 			return;
 		} catch (RefNotFoundException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 			return;
 		} catch (InvalidRefNameException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 			return;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 			return;
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(e.getMessage());
+			addlogs(null,e);
 			return;
 		}
-		push(true);
+		push(host,username,password,true);
 	}
-	public void gitWorking(){
+	public void setProgressInfo(String message,int progressValue){
+		if(!progressBugStop){
+			progressMessage = message;
+			this.progressValue = progressValue;
+		}
+		else return;
+	}
+	/**
+	 * 获取在项目文件中储存的git远程仓库凭据
+	 * @return包含远程仓库url地址、用户名和密码的字符串数组
+	 */
+	public String[] getGitInfo(){
 		String host = b.projectProperties.getProperty("GitHost");
 		String username = b.projectProperties.getProperty("GitUsername");
 		String password = b.projectProperties.getProperty("GitPassword");
-		if(host == null || username == null || password == null) return;
+		if(host == null || username == null || password == null) return null;
+		else return new String[]{host,username,password};
+	}
+	public void gitWorking(String host,String username,String password){
 		StringBuilder sb = new StringBuilder();
-		
 		new Thread(new Runnable() {
 			
 			@Override
@@ -2718,20 +2767,16 @@ public class blackAction implements Serializable {
 			public void run() {
 				// TODO Auto-generated method stub
 				List<DiffEntry> commit = commit(null,true);
-				progressMessage = "已将项目提交至本地仓库";
-				ProgressValue = 10;
-				progressMessage = "正在将本地仓库更改同步到远程仓库";
-				ProgressValue = 30;
-				Iterable<PushResult> push = push(true);
-				progressMessage = "已将更改同步至远程仓库，开始加载同步结果...";
-				ProgressValue = 70;
+				setProgressInfo("正在将本地仓库更改同步到远程仓库", 30);
+				
+				Iterable<PushResult> push = push(host,username,password,true);
+				setProgressInfo("已将更改同步至远程仓库，开始加载同步结果...", 70);
 				sb.append("项目中发生更改的文件：\n");
 				if(commit != null)
 					for(DiffEntry diff:commit){
 						sb.append(diff.getNewPath()+"\n");
 					}
-				progressMessage = "已获取文件更改信息，开始获取服务器返回结果...";
-				ProgressValue = 80;
+				setProgressInfo("已获取文件更改信息，开始获取服务器返回结果...", 80);
 				sb.append("-------------------\n远程仓库返回值：\n");
 				ArrayList<String> al = new ArrayList<>();
 				int count = 0;
@@ -2755,13 +2800,33 @@ public class blackAction implements Serializable {
 				for(String str:al){
 					sb.append(str+"\n");
 				}
-				
-				progressMessage = "同步成功！";
-				ProgressValue = 100;
+				setProgressInfo("同步成功！", 100);
 			}
 		}).start();
 	}
-	
+//	public void showPushResult(){
+//		
+//		if(push != null)
+//			for(PushResult pr:push){
+//				Collection<RemoteRefUpdate> remoteUpdates = pr.getRemoteUpdates();
+//				for(RemoteRefUpdate rru:remoteUpdates){
+//					sb.append("远程分支名： "+rru.getRemoteName()+"\n");
+//					sb.append("对象ID： "+rru.getNewObjectId()+"\n");
+//					sb.append("更改备注： "+rru.getMessage()+"\n");
+//					sb.append("是否删除： "+rru.isDelete()+"\n");
+//					sb.append("强制更新： "+rru.isForceUpdate()+"\n");
+//					sb.append("状态： "+rru.getStatus()+"\n");
+//					if(rru.getStatus().toString().equals("OK")){
+//						count++;
+//						al.add(rru.getRemoteName());
+//					}
+//				}
+//			}
+//		sb.append("\n================\n同步的分支：\n");
+//		for(String str:al){
+//			sb.append(str+"\n");
+//		}
+//	}
 	public void findInfo() {
 		if (b.text.getSelectionCount() == 0) {
 			Runnable runn = new Runnable() {

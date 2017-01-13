@@ -15,6 +15,7 @@ import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.notes.Note;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -76,15 +78,15 @@ public class test {
 //       }
        //gitTool.CloneFromRemote(path, remotePath, true, null, username, password);
        Git git = new Git(new FileRepository(path+"/.git"));
-       List<Ref> list = git.branchList().setListMode(ListMode.REMOTE).call();
-       for(Ref f:list){
-    	   System.out.println(f.getName());
-    	   //if(f.getName().indexOf("master") == -1)
-    	   git.branchDelete().setBranchNames(f.getName()).setForce(true).call();
+       Iterable<RevCommit> call = git.log()
+    		   .call();
+       for(RevCommit rev:call){
+    	   System.out.println(rev.getShortMessage()+" "+rev.getAuthorIdent().getName()+rev.getAuthorIdent().getEmailAddress()+
+    			   rev.getCommitterIdent().getWhen().to);
        }
-       
-       gitTool.pushToRemote(path, remotePath, username, password, true);
-       
+//       For(Note ns:call){
+////    	   System
+//       }
        
    
     }

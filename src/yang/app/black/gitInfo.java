@@ -113,20 +113,45 @@ public class gitInfo extends Dialog {
 		ok.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if(remember.getSelection()){
-					if(path!= null && !path.getText().equals("")){
-						if(username != null && !username.equals("")){
-							if(password != null && !password.equals("")){
-								b.ba.saveGitInfo(path.getText(), username.getText(), password.getText());
-								b.ba.setGitRespositoryPath();
-								b.ba.gitWorking();
-							}
+				if(path!= null && !path.getText().equals("")){
+					if(username != null && !username.equals("")){
+						if(password != null && !password.equals("")){
+							String host = path.getText();
+							String name = username.getText();
+							String pass = password.getText();
+							b.getDisplay().asyncExec(new Runnable() {
+								
+								@Override
+								public void run() {
+									// TODO Auto-generated method stub
+									new showProgress(b,"连接远程仓库") {
+										
+										@Override
+										void actionWhenOKButtonSelected() {
+											// TODO Auto-generated method stub
+											if(remember.getSelection())
+												b.ba.saveGitInfo(path.getText(), username.getText(), password.getText());
+										}
+										
+										@Override
+										void actionInOtherThread() {
+											// TODO Auto-generated method stub
+											
+										}
+									};
+								}
+							});
+							
+							new Thread(new Runnable() {
+								public void run() {
+									b.ba.setProgressInfo("连接远程仓库...", 20);
+									testConn(host,name,pass);
+									b.ba.setProgressInfo("上传成功！", 100);
+								}
+							}).start();
 						}
 					}
-				}else{
-					b.ba.setGitRespositoryPath();
-					b.ba.gitWorking();
-				}			
+				}		
 			}
 		});
 		ok.setBounds(337, 172, 142, 25);
@@ -139,5 +164,11 @@ public class gitInfo extends Dialog {
 		if(host_ != null && username != null && password != null)
 			remember.setSelection(true);
 
+	}
+	public void testConn(String host,String username,String password){
+		b.ba.setGitRespositoryPath();
+		b.ba.commit(null, true);
+		b.ba.push(host, username, password, true);
+		
 	}
 }
