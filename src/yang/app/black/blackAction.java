@@ -2771,7 +2771,7 @@ public class blackAction implements Serializable {
 				
 				Iterable<PushResult> push = push(host,username,password,true);
 				setProgressInfo("已将更改同步至远程仓库，开始加载同步结果...", 70);
-				sb.append("项目中发生更改的文件：\n");
+				sb.append("项目中发生更改的文件"+"("+commit.size()+")"+"：\n");
 				if(commit != null)
 					for(DiffEntry diff:commit){
 						sb.append(diff.getNewPath()+"\n");
@@ -2796,7 +2796,7 @@ public class blackAction implements Serializable {
 							}
 						}
 					}
-				sb.append("\n================\n同步的分支：\n");
+				sb.append("\n================\n同步的分支"+"("+al.size()+")"+"：\n");
 				for(String str:al){
 					sb.append(str+"\n");
 				}
