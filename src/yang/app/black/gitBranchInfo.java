@@ -45,20 +45,22 @@ public class gitBranchInfo extends Dialog {
 	private TableColumn tableColumn;
 	private TableColumn tableColumn_2;
 	private TableColumn tableColumn_1;
-
+	private Group group_1;
 
 	/**
 	 * Create the dialog.
+	 * 
 	 * @param parent
 	 * @param style
 	 */
 	public gitBranchInfo(Shell parent, int style) {
 		super(parent, style);
-		b = (black)parent;
+		b = (black) parent;
 	}
 
 	/**
 	 * Open the dialog.
+	 * 
 	 * @return the result
 	 */
 	public Object open() {
@@ -85,7 +87,7 @@ public class gitBranchInfo extends Dialog {
 		shell.setSize(693, 481);
 		shell.setText("\u64CD\u4F5C\u4ED3\u5E93\u5206\u652F");
 		windowLocation.dialogLocation(getParent(), shell);
-		
+
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -95,19 +97,45 @@ public class gitBranchInfo extends Dialog {
 		});
 		btnNewButton.setBounds(602, 417, 75, 25);
 		btnNewButton.setText("\u786E\u5B9A");
-		
+
 		group = new Group(shell, SWT.NONE);
 		group.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		group.setText("\u4ED3\u5E93\u5206\u652F");
 		group.setBounds(10, 10, 201, 387);
-		
-		table = new Table(group, SWT.FULL_SELECTION|SWT.MULTI);
+
+		table = new Table(group, SWT.FULL_SELECTION | SWT.MULTI);
 		table.setBounds(10, 28, 181, 349);
 		table.setHeaderVisible(false);
 		table.setLinesVisible(true);
+		table.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				if (table.getSelectionCount() == 1) {
+					TableItem item = table.getItem(table.getSelectionIndex());
+					group_1.setText(item.getText() + "分支最近的提交记录");
+					addCommitLogs(new String[] { item.getText() });
+				} else {
+					TableItem[] selection = table.getSelection();
+					group_1.setText("仓库最近的提交记录");
+					String[] texts = new String[selection.length];
+					for (int i = 0; i < selection.length; i++) {
+						texts[i] = selection[i].getText();
+					}
+					addCommitLogs(texts);
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+		});
 		menu = new Menu(table);
 		table.setMenu(menu);
-		
+
 		button = new Button(shell, SWT.NONE);
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -117,7 +145,7 @@ public class gitBranchInfo extends Dialog {
 		});
 		button.setBounds(495, 417, 101, 25);
 		button.setText("\u66F4\u65B0\u6570\u636E");
-		
+
 		Button button_1 = new Button(shell, SWT.NONE);
 		button_1.setEnabled(false);
 		button_1.addSelectionListener(new SelectionAdapter() {
@@ -128,12 +156,12 @@ public class gitBranchInfo extends Dialog {
 		});
 		button_1.setBounds(358, 417, 131, 25);
 		button_1.setText("\u67E5\u770B\u4ED3\u5E93\u63D0\u4EA4\u4FE1\u606F");
-		
-		Group group_1 = new Group(shell, SWT.NONE);
+
+		group_1 = new Group(shell, SWT.NONE);
 		group_1.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		group_1.setText("\u4ED3\u5E93\u6700\u8FD1\u63D0\u4EA4\u8BB0\u5F55");
+		group_1.setText("仓库最近的提交记录");
 		group_1.setBounds(217, 10, 460, 387);
-		
+
 		table_1 = new Table(group_1, SWT.MULTI);
 		table_1.setBounds(10, 23, 440, 354);
 		table_1.setLinesVisible(true);
@@ -148,45 +176,70 @@ public class gitBranchInfo extends Dialog {
 		tableColumn.setText("提交时间");
 		tableColumn.pack();
 
+	}
+
+	public void addCommitLogs(String[] branchNames) {
+		if (branchNames == null) {
+			Iterable<RevCommit> logs = b.ba.getCommitLogsFormLocalRespository();
+			table_1.removeAll();
+			table_1.setRedraw(false);
+			for (RevCommit r : logs) {
+				String[] texts = new String[] { r.getFullMessage(), r.getAuthorIdent().getName(),
+						DateFormat.getInstance().format(r.getCommitterIdent().getWhen()) };
+				TableItem tableItem = new TableItem(table_1, SWT.NONE);
+				tableItem.setText(texts);
+				tableColumn.pack();
+				tableColumn_1.pack();
+				tableColumn_2.pack();
+			}
+			table_1.setRedraw(true);
+		} else {
+			table_1.removeAll();
+			table_1.setRedraw(false);
+			ArrayList<RevCommit> logs = b.ba.getCommits(branchNames);
+			System.out.println(branchNames.length+" "+logs.size());
+			for (RevCommit r : logs) {
+				String[] texts = new String[] { r.getFullMessage(), r.getAuthorIdent().getName(),
+						DateFormat.getInstance().format(r.getCommitterIdent().getWhen()) };
+				TableItem tableItem = new TableItem(table_1, SWT.NONE);
+				tableItem.setText(texts);
+				tableColumn.pack();
+				tableColumn_1.pack();
+				tableColumn_2.pack();
+			}
+
+			table_1.setRedraw(true);
+		}
 
 	}
-	public void setTable(){
+
+	public void setTable() {
 		b.getDisplay().asyncExec(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				showProgress showProgress = new showProgress(b) {
-					
+
 					@Override
 					void actionWhenOKButtonSelected() {
 						// TODO Auto-generated method stub
-						
+
 					}
-					
+
 					@Override
 					void actionInOtherThread() {
 						// TODO Auto-generated method stub
-						if(allBranchFromRemote == null)return;
+						if (allBranchFromRemote == null)
+							return;
 						table.removeAll();
-						group.setText("仓库分支("+allBranchFromRemote.size()+")");
-						for(Ref r:allBranchFromRemote){
-							TableItem tableItem= new TableItem(table, SWT.NONE);
+						group.setText("仓库分支(" + allBranchFromRemote.size() + ")");
+						for (Ref r : allBranchFromRemote) {
+							TableItem tableItem = new TableItem(table, SWT.NONE);
 							tableItem.setText(0, r.getName());
-							//tableItem.set
+							// tableItem.set
 						}
-						Iterable<RevCommit> logs = b.ba.getCommitLogsFormLocalRespository();
-						for(RevCommit r:logs){
-							String[] texts = new String[]{r.getFullMessage(),
-									r.getAuthorIdent().getName(),
-									DateFormat.getInstance().format(r.getCommitterIdent().getWhen())};
-							table_1.removeAll();
-							TableItem tableItem = new TableItem(table_1, SWT.NONE);
-							tableItem.setText(texts);
-							tableColumn.pack();
-							tableColumn_1.pack();
-							tableColumn_2.pack();
-						}
+						addCommitLogs(null);
 
 					}
 				};
@@ -194,9 +247,9 @@ public class gitBranchInfo extends Dialog {
 				showProgress.open();
 			}
 		});
-		
+
 		new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
@@ -205,27 +258,28 @@ public class gitBranchInfo extends Dialog {
 				b.ba.setProgressInfo("完成！", 100);
 			}
 		}).start();
-		
+
 	}
-	public void setTableMenu(){
+
+	public void setTableMenu() {
 		MenuItem remove = b.ba.getMenuItem(menu, "从远程仓库中删除", SWT.NONE);
 		remove.addSelectionListener(new SelectionListener() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
-				if(table.getSelectionCount() == 0) return;
-				
+				if (table.getSelectionCount() == 0)
+					return;
+
 				TableItem[] selection = table.getSelection();
 				ArrayList<String> al = new ArrayList<>();
-				for(TableItem ti:selection){
+				for (TableItem ti : selection) {
 					al.add(ti.getText(0));
 				}
-				
-				
-				if(selection != null){
+
+				if (selection != null) {
 					b.getDisplay().asyncExec(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
@@ -240,59 +294,58 @@ public class gitBranchInfo extends Dialog {
 								@Override
 								void actionWhenOKButtonSelected() {
 									// TODO Auto-generated method stub
-									
+
 								}
 							};
 							showProgress.setTitle("从远程仓库删除");
 							showProgress.open();
 						}
 					});
-					
-					
+
 					new Thread(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
 							int progr = 0;
-							if(al.size() > 0)
-								progr = 100/al.size();
-							for(String str:al){
-								b.ba.deleteBranchFromRemote(str,false);
-								b.ba.setProgressInfo("正在从远程仓库删除", b.ba.progressValue+progr);
-								b.ba.addlogs("删除"+str,null);
+							if (al.size() > 0)
+								progr = 100 / al.size();
+							for (String str : al) {
+								b.ba.deleteBranchFromRemote(str, false);
+								b.ba.setProgressInfo("正在从远程仓库删除", b.ba.progressValue + progr);
+								b.ba.addlogs("删除" + str, null);
 							}
 							b.ba.setProgressInfo("完成！", 100);
 						}
 					}).start();
-					
+
 				}
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 		MenuItem remove_ = b.ba.getMenuItem(menu, "从远程仓库和本地仓库中删除", SWT.NONE);
 		remove_.addSelectionListener(new SelectionListener() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
-				if(table.getSelectionCount() == 0) return;
-				
+				if (table.getSelectionCount() == 0)
+					return;
+
 				TableItem[] selection = table.getSelection();
 				ArrayList<String> al = new ArrayList<>();
-				for(TableItem ti:selection){
+				for (TableItem ti : selection) {
 					al.add(ti.getText(0));
 				}
-				
-				
-				if(selection != null){
+
+				if (selection != null) {
 					b.getDisplay().asyncExec(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
@@ -307,82 +360,83 @@ public class gitBranchInfo extends Dialog {
 								@Override
 								void actionWhenOKButtonSelected() {
 									// TODO Auto-generated method stub
-									
+
 								}
 							};
 							showProgress.setTitle("从远程和本地仓库中删除");
 							showProgress.open();
 						}
 					});
-					
-					
+
 					new Thread(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
 							int progr = 0;
-							if(al.size() > 0)
-								progr = 100/al.size();
-							for(String str:al){
-								b.ba.deleteBranchFromRemote(str,true);
-								b.ba.setProgressInfo("正在从远程仓库删除", b.ba.progressValue+progr);
-								b.ba.addlogs("删除"+str,null);
+							if (al.size() > 0)
+								progr = 100 / al.size();
+							for (String str : al) {
+								b.ba.deleteBranchFromRemote(str, true);
+								b.ba.setProgressInfo("正在从远程仓库删除", b.ba.progressValue + progr);
+								b.ba.addlogs("删除" + str, null);
 							}
 							b.ba.setProgressInfo("完成！", 100);
 						}
 					}).start();
-					
+
 				}
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 		MenuItem copy = b.ba.getMenuItem(menu, "下载所选的分支到本地", SWT.NONE);
 		copy.addSelectionListener(new SelectionListener() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
-				if(table.getSelectionCount() == 0)return;
+				if (table.getSelectionCount() == 0)
+					return;
 				DirectoryDialog dd = new DirectoryDialog(b);
 				String dir = dd.open();
-				if(dir == null) return;
+				if (dir == null)
+					return;
 				ArrayList<String> coll = new ArrayList<>();
 				TableItem[] selection = table.getSelection();
-				for(TableItem t:selection){
+				for (TableItem t : selection) {
 					coll.add(t.getText(0));
 				}
 				b.getDisplay().asyncExec(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
 						showProgress showProgress = new showProgress(b) {
-							
+
 							@Override
 							void actionWhenOKButtonSelected() {
 								// TODO Auto-generated method stub
-								
+
 							}
-							
+
 							@Override
 							void actionInOtherThread() {
 								// TODO Auto-generated method stub
-								
+
 							}
 						};
 						showProgress.setTitle("从远程仓库下载");
 						showProgress.open();
 					}
 				});
-				
+
 				new Thread(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						b.ba.setProgressInfo("正在从远程仓库下载", 20);
@@ -390,43 +444,45 @@ public class gitBranchInfo extends Dialog {
 						b.ba.setProgressInfo("下载完成", 100);
 					}
 				}).start();
-				
+
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 		MenuItem copyall = b.ba.getMenuItem(menu, "下载所有的分支到本地", SWT.NONE);
 		copyall.addSelectionListener(new SelectionListener() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
-				if(table.getItemCount() == 0)return;
+				if (table.getItemCount() == 0)
+					return;
 				DirectoryDialog dd = new DirectoryDialog(b);
 				String dir = dd.open();
-				if(dir == null) return;
-				
+				if (dir == null)
+					return;
+
 				b.getDisplay().asyncExec(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
 						showProgress showProgress = new showProgress(b) {
-							
+
 							@Override
 							void actionWhenOKButtonSelected() {
 								// TODO Auto-generated method stub
-								
+
 							}
-							
+
 							@Override
 							void actionInOtherThread() {
 								// TODO Auto-generated method stub
-								
+
 							}
 						};
 						showProgress.setTitle("从远程仓库下载");
@@ -434,7 +490,7 @@ public class gitBranchInfo extends Dialog {
 					}
 				});
 				new Thread(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
@@ -444,42 +500,42 @@ public class gitBranchInfo extends Dialog {
 					}
 				}).start();
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 		MenuItem saveto = b.ba.getMenuItem(menu, "将当前项目上载到所选分支", SWT.NONE);
 		saveto.setEnabled(false);
 		MenuItem crate = b.ba.getMenuItem(menu, "创建分支", SWT.NONE);
 		crate.addSelectionListener(new SelectionListener() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
 				rename re = new rename(b, SWT.NONE);
 				re.setTitle("命名分支");
 				String name = re.open();
-				if(name != null){
+				if (name != null) {
 					b.getDisplay().asyncExec(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
 							showProgress showProgress = new showProgress(b) {
-								
+
 								@Override
 								void actionWhenOKButtonSelected() {
 									// TODO Auto-generated method stub
 									reLoadData();
 								}
-								
+
 								@Override
 								void actionInOtherThread() {
 									// TODO Auto-generated method stub
-									
+
 								}
 							};
 							showProgress.setTitle("新建分支并保存到远程仓库");
@@ -487,7 +543,7 @@ public class gitBranchInfo extends Dialog {
 						}
 					});
 					new Thread(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
@@ -498,17 +554,17 @@ public class gitBranchInfo extends Dialog {
 					}).start();
 				}
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
-		
 
 	}
-	public void reLoadData(){
+
+	public void reLoadData() {
 		setTable();
 	}
 }

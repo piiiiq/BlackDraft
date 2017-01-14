@@ -13,13 +13,19 @@ import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.notes.Note;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.RefSpec;
+import org.eclipse.jgit.transport.TrackingRefUpdate;
+import org.eclipse.jgit.transport.Transport;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.junit.Test;
@@ -34,8 +40,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JGit API≤‚ ‘
@@ -51,46 +59,29 @@ public class test {
     public static void main(String args[]) throws IOException, JGitInternalException, GitAPIException, URISyntaxException{
        
        String path = "d://test//git//test01";
-        
-    	//gitTool.createGitRepository(path);
-//       Git git = new Git(new FileRepository(path+"/.git"));
-////       RemoteAddCommand remoteAdd = git.remoteAdd();
-////       remoteAdd.setUri(new URIish(remotePath));
-////       remoteAdd.
-//       
-//       List<Ref> call = git.branchList().setListMode(ListMode.ALL).call();
-//       for(Ref r:call){
-//    	   System.out.println(r);
-//       }
-//    	System.out.println("ok");
-//    	gitTool.commit(path, "ceui");
-//    	gitTool.pushToRemote(path, remotePath, username, password, true);
-//       LsRemoteCommand remoteCommand = Git.lsRemoteRepository();
-//       Collection <Ref> refs = remoteCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
-//                           .setHeads(true)
-//                           .setRemote(remotePath)
-//                           .call();
-//
-//       for (Ref ref : refs) {
-//           System.out.println("Ref: " + ref.getName());
-//           Git git = new Git(new FileRepository(path+"/.git"));
-//           git.branchDelete().setBranchNames(ref.getName()).call();
-//       }
-       //gitTool.CloneFromRemote(path, remotePath, true, null, username, password);
-       Git git = new Git(new FileRepository(path+"/.git"));
-       Iterable<RevCommit> call = git.log()
-    		   .call();
-       for(RevCommit rev:call){
-    	   System.out.println(rev.getShortMessage()+" "+rev.getAuthorIdent().getName()+rev.getAuthorIdent().getEmailAddress()+
-    			   rev.getCommitterIdent().getWhen().to);
-       }
-//       For(Note ns:call){
-////    	   System
-//       }
+       String path2 = "C://Users//Administrator//Documents//blacktest//2017.01.133";
+       String[] s = new String[]{"refs/heads/nov","refs/heads/master"};
        
+       ArrayList<RevCommit> commits = gitTool.getCommitsFromBranch(path, s);
+       for(RevCommit r:commits){
+    	   System.out.println(r.getFullMessage());
+       }
+       
+      
    
     }
-    
+    public static Ref getBranch(String repositoryPath,ObjectId id) throws IOException, GitAPIException{
+        Git git = new Git(new FileRepository(repositoryPath+"/.git"));
+        ListBranchCommand list = git.branchList().setListMode(ListMode.ALL);
+        List<Ref> call = list.call();
+        Ref ref = null;
+        for(Ref r:call){
+        	if(r.getObjectId().equals(id)){
+        		ref = r;
+        	}
+        }
+        return ref;
+    }
     public void cloneAll(String host) throws InvalidRemoteException, TransportException, GitAPIException{
     	Git git = Git.cloneRepository().setURI(host).setNoCheckout(true).setCloneAllBranches(true).call();
     	List<Ref> branches = git.branchList().setListMode( ListMode.REMOTE ).call();

@@ -2502,9 +2502,9 @@ public class blackAction implements Serializable {
 			addlogs(null,e);
 		}
 	}
-	public void changeBranch(){
+	public void changeBranch(String branchName){
 		try {
-			gitTool.changeBranch( b.projectFile.getParent(), b.projectProperties.getProperty("projectName"));
+			gitTool.changeBranch( b.projectFile.getParent(),branchName);
 		} catch (RefAlreadyExistsException e) {
 			// TODO Auto-generated catch block
 			addlogs(null,e);
@@ -2530,9 +2530,25 @@ public class blackAction implements Serializable {
 		if(dir.exists() && dir.list().length > 0) return true;
 		else return false;
 	}
+	public ArrayList<RevCommit> getCommits(String[] branchNames){
+		ArrayList<RevCommit> al = null;
+		try {
+			al = gitTool.getCommitsFromBranch(b.projectFile.getParent(), branchNames);
+		} catch (NoHeadException e) {
+			// TODO Auto-generated catch block
+			addlogs(null,e);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			addlogs(null,e);
+		} catch (GitAPIException e) {
+			// TODO Auto-generated catch block
+			addlogs(null,e);
+		}
+		return al;
+	}
 	public List<DiffEntry> commit(String message,boolean quiet){
 		if(!isHasGitDir()) setGitRespositoryPath();
-		changeBranch();
+		changeBranch(b.projectProperties.getProperty("projectName"));
 		String mess = null;
 		List<DiffEntry> commit = null;
 		if(message == null)
@@ -2554,6 +2570,7 @@ public class blackAction implements Serializable {
 			}
 			getBMessageBox("更改的文件", sb.toString());
 		}
+		Iterable<RevCommit> log = getCommitLogsFormLocalRespository();
 		return commit;
 	}
 	public boolean gitSetUp(){
@@ -2771,7 +2788,6 @@ public class blackAction implements Serializable {
 				
 				Iterable<PushResult> push = push(host,username,password,true);
 				setProgressInfo("已将更改同步至远程仓库，开始加载同步结果...", 70);
-				sb.append("项目中发生更改的文件"+"("+commit.size()+")"+"：\n");
 				if(commit != null)
 					for(DiffEntry diff:commit){
 						sb.append(diff.getNewPath()+"\n");
