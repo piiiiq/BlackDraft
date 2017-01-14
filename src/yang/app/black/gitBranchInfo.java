@@ -259,12 +259,10 @@ public class gitBranchInfo extends Dialog {
 								progr = 100/al.size();
 							for(String str:al){
 								b.ba.deleteBranchFromRemote(str,false);
-								b.ba.progressMessage = "正在从远端仓库删除"+str;
-								b.ba.progressValue += progr;
+								b.ba.setProgressInfo("正在从远程仓库删除", b.ba.progressValue+progr);
 								b.ba.addlogs("删除"+str,null);
 							}
-							b.ba.progressMessage = "完成！";
-							b.ba.progressValue = 100;
+							b.ba.setProgressInfo("完成！", 100);
 						}
 					}).start();
 					
@@ -328,12 +326,10 @@ public class gitBranchInfo extends Dialog {
 								progr = 100/al.size();
 							for(String str:al){
 								b.ba.deleteBranchFromRemote(str,true);
-								b.ba.progressMessage = "正在从远端仓库删除"+str;
-								b.ba.progressValue += progr;
+								b.ba.setProgressInfo("正在从远程仓库删除", b.ba.progressValue+progr);
 								b.ba.addlogs("删除"+str,null);
 							}
-							b.ba.progressMessage = "完成！";
-							b.ba.progressValue = 100;
+							b.ba.setProgressInfo("完成！", 100);
 						}
 					}).start();
 					
@@ -389,12 +385,9 @@ public class gitBranchInfo extends Dialog {
 					
 					@Override
 					public void run() {
-						// TODO Auto-generated method stub
-						b.ba.progressMessage = "正在从远程仓库下载";
-						b.ba.progressValue = 20;
+						b.ba.setProgressInfo("正在从远程仓库下载", 20);
 						b.ba.copyBranchFromeRemote(dir, null, coll, false);
-						b.ba.progressMessage = "下载完成";
-						b.ba.progressValue = 100;
+						b.ba.setProgressInfo("下载完成", 100);
 					}
 				}).start();
 				
@@ -445,11 +438,9 @@ public class gitBranchInfo extends Dialog {
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						b.ba.progressMessage = "开始从远程仓库下载";
-						b.ba.progressValue = 20;
+						b.ba.setProgressInfo("开始从远程仓库下载", 20);
 						b.ba.copyBranchFromeRemote(dir, null, null, true);
-						b.ba.progressMessage = "完成！";
-						b.ba.progressValue = 100;
+						b.ba.setProgressInfo("完成！", 100);
 					}
 				}).start();
 			}
@@ -500,11 +491,9 @@ public class gitBranchInfo extends Dialog {
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
-							b.ba.progressMessage = "正在将更改上传至远程仓库";
-							b.ba.progressValue = 20;
+							b.ba.setProgressInfo("正在将更改上传至远程仓库", 20);
 							b.ba.createBranch(name);
-							b.ba.progressMessage = "完成！";
-							b.ba.progressValue = 100;
+							b.ba.setProgressInfo("完成！", 100);
 						}
 					}).start();
 				}
