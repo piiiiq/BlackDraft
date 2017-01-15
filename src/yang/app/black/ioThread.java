@@ -361,9 +361,20 @@ public class ioThread implements Runnable,Serializable{
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				fis.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			black.ba.getMessageBox("从文件还原对象时出错", "从文件还原对象时出错!\n"+"文件路径："+file.getPath()+"\n"
-			+"详细信息："+e.toString());
+					+"详细信息："+e.toString());
+			if(file.delete())black.ba.getMessageBox("尝试删除出错的文件", "已删除以下文件：\n"+file.toString());
+			else {
+				black.ba.getMessageBox("尝试删除出错的文件", "文件删除失败，将在程序退出后再次尝试删除");
+				file.deleteOnExit();
+			}
+			
 		}
 		return oo;
 	}

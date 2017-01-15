@@ -71,6 +71,9 @@ import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
@@ -126,7 +129,7 @@ public class blackAction implements Serializable {
 	List<TextRegion> markTextData;
 	findWord find;
 	public String marktext = "";
-	boolean marktextIsChanged,markstatIsChanged;
+	boolean marktextIsChanged, markstatIsChanged;
 	public Shell fullscreen;
 	boolean fullscreen_writingview;
 	Color lastForeColor, lastBackColor;
@@ -216,11 +219,12 @@ public class blackAction implements Serializable {
 	 */
 	public void selectAllText(StyledText text) {
 		if (text != null) {
-
 			if (text.getSelection().equals(currentLineOffest())) {
 				int oldTopPixes = text.getTopPixel();
+				text.setRedraw(false);
 				selectAll(text);
 				text.setTopPixel(oldTopPixes);
+				text.setRedraw(true);
 			} else
 				selectTextOfline();
 		}
@@ -625,8 +629,7 @@ public class blackAction implements Serializable {
 
 	public void copyText(StyledText text) {
 		if (text != null)
-			text.copy();
-		;
+			copyWithoutFormat(text.getText());
 	}
 
 	/**
@@ -789,6 +792,24 @@ public class blackAction implements Serializable {
 		FontDialog fd = new FontDialog(b);
 		FontData font = fd.open();
 		return font;
+	}
+
+	public void copyWithoutFormat(String text) {
+		if (text != null && text.length() > 0) {
+			Clipboard clip = new Clipboard(b.getDisplay());
+			Transfer[] tran = new Transfer[] { TextTransfer.getInstance() };
+			clip.setContents(new Object[] { text }, tran);
+		}
+	}
+
+	public void copyWithoutDocumentTitle() {
+		StringBuilder sb = new StringBuilder();
+		List<String> allLine = cheakDocument.getAllLine(b.text.getSelectionText());
+		for (String s : allLine) {
+			if (!cheakDocument.cheakString(s))
+				sb.append(s + "\n");
+		}
+		copyWithoutFormat(sb.toString());
 	}
 
 	/**
@@ -2091,9 +2112,9 @@ public class blackAction implements Serializable {
 			ioThread io = new ioThread(b);
 			IDocument doc = io.readBlackFile(markfile, null);
 			marktext = doc.get();
-			File statfile = new File(b.projectFile.getParentFile().getAbsolutePath()+"\\Settings\\markstat");
-			if(statfile.exists()){
-				markstat = (ArrayList<markstat>)io.readObjFile(statfile);
+			File statfile = new File(b.projectFile.getParentFile().getAbsolutePath() + "\\Settings\\markstat");
+			if (statfile.exists()) {
+				markstat = (ArrayList<markstat>) io.readObjFile(statfile);
 			}
 		} else
 			b.log.appendLog("预定义文件不存在！", null, false);
@@ -2103,15 +2124,16 @@ public class blackAction implements Serializable {
 		File markfile = getRealFile("预定义");
 		if (markfile != null && markfile.exists()) {
 			ioThread io = new ioThread(b);
-			if(marktextIsChanged){
+			if (marktextIsChanged) {
 				Document docu = new Document();
 				docu.set(marktext);
 				io.writeBlackFile(markfile, docu, null);
 				marktextIsChanged = false;
 			}
-			File statfile = new File(b.projectFile.getParentFile().getAbsolutePath()+"\\Settings\\markstat");
-			if(!statfile.exists()){
-				if(!statfile.getParentFile().exists()) statfile.getParentFile().mkdir();
+			File statfile = new File(b.projectFile.getParentFile().getAbsolutePath() + "\\Settings\\markstat");
+			if (!statfile.exists()) {
+				if (!statfile.getParentFile().exists())
+					statfile.getParentFile().mkdir();
 				try {
 					statfile.createNewFile();
 				} catch (IOException e) {
@@ -2120,10 +2142,10 @@ public class blackAction implements Serializable {
 					getMessageBox("保存调频数据", "保存预定义文件调频数据时出错！");
 				}
 			}
-			if(markstat.size() > 0 && markstatIsChanged){
+			if (markstat.size() > 0 && markstatIsChanged) {
 				io.writeObjFile(statfile, markstat);
 			}
-			
+
 		}
 	}
 
@@ -2184,96 +2206,101 @@ public class blackAction implements Serializable {
 		}
 
 		markTextData = list;
-		//校验预定义频率arraylist里的条目是否在预定义文件中存在，如果不存在则将条目删除
+		// 校验预定义频率arraylist里的条目是否在预定义文件中存在，如果不存在则将条目删除
 		ishasInMarkdata();
 	}
+
 	/**
 	 * 检查预定义数据里是否存在调频数据里的条目，如果不存在则将调频数据里的条目删除
 	 */
-	void ishasInMarkdata(){
+	void ishasInMarkdata() {
 		Iterator<markstat> it_stat = markstat.iterator();
-		while(it_stat.hasNext()){
+		while (it_stat.hasNext()) {
 			String str = it_stat.next().text;
 			boolean ishas = false;
 			Iterator<TextRegion> it_mark = markTextData.iterator();
-			while(it_mark.hasNext()){
+			while (it_mark.hasNext()) {
 				String text = it_mark.next().text;
-				if(text.equals(str)){
+				if (text.equals(str)) {
 					ishas = true;
 					break;
 				}
 			}
-			if(!ishas){
+			if (!ishas) {
 				it_stat.remove();
 			}
 		}
-		
-		
+
 	}
+
 	/**
 	 * 判断给定的字符串是否在频率统计arraylist中存在
+	 * 
 	 * @param text
 	 */
-	hasinfo markstatIshas(String text){		
+	hasinfo markstatIshas(String text) {
 		boolean ishas = false;
-		int index = 0;		
-		for(int i=0;i<markstat.size();i++){
-			if(text.equals(markstat.get(i).text)){
+		int index = 0;
+		for (int i = 0; i < markstat.size(); i++) {
+			if (text.equals(markstat.get(i).text)) {
 				ishas = true;
 				index = i;
 				break;
 			}
 		}
-		return new hasinfo(ishas,index);
+		return new hasinfo(ishas, index);
 	}
+
 	/**
 	 * 将一个已存在的条目置顶（放到markstat arraylist的末尾）
+	 * 
 	 * @param text
 	 */
-	void setTopOnMarkstat(String text){
-		for(int i=0;i<markstat.size();i++){
-			if(markstat.get(i).text.equals(text)){
+	void setTopOnMarkstat(String text) {
+		for (int i = 0; i < markstat.size(); i++) {
+			if (markstat.get(i).text.equals(text)) {
 				int stat = markstat.get(i).count;
 				markstat.remove(i);
 				markstat.add(new markstat(text, stat));
 			}
 		}
 	}
+
 	/**
 	 * 依照频率对统计arraylist中的条目进行排序
 	 */
-	void setindexOfMarkstat(){
+	void setindexOfMarkstat() {
 		markstatIsChanged = true;
 		ArrayList<markstat> al = new ArrayList<>();
-		while(markstat.size() > 0){
+		while (markstat.size() > 0) {
 			int maxindex = 0;
 			int max = 0;
-			for(int i=0;i<markstat.size();i++){
-				if(markstat.get(i).count > max){
+			for (int i = 0; i < markstat.size(); i++) {
+				if (markstat.get(i).count > max) {
 					max = markstat.get(i).count;
 					maxindex = i;
 				}
 			}
-			
+
 			al.add(markstat.get(maxindex));
 			markstat.remove(maxindex);
-			
 
 		}
 		markstat = al;
 	}
-	List<TextRegion> setindexOfMarkstatBy(){
-		if(b.text.getCaretOffset() > 0){
-			String text = b.text.getText(0, b.text.getCaretOffset()-1);
+
+	List<TextRegion> setindexOfMarkstatBy() {
+		if (b.text.getCaretOffset() > 0) {
+			String text = b.text.getText(0, b.text.getCaretOffset() - 1);
 			List<TextRegion> al = markTextData;
 			List<TextRegion> al_new = new ArrayList<TextRegion>();
-			while(al.size() > 0){
+			while (al.size() > 0) {
 				int max = 0;
 				int maxindex = 0;
-				for(int i=0;i<al.size();i++){
+				for (int i = 0; i < al.size(); i++) {
 					String str = al.get(i).text;
 					int index = text.lastIndexOf(str);
-					if(index > max){
+					if (index > max) {
 						max = index;
 						maxindex = i;
 					}
@@ -2282,8 +2309,10 @@ public class blackAction implements Serializable {
 				al.remove(maxindex);
 			}
 			return al_new;
-		}else return null;
+		} else
+			return null;
 	}
+
 	void findinMark() {
 		if (marktext == null || marktext.equals(""))
 			readMarkFile();
@@ -2296,24 +2325,8 @@ public class blackAction implements Serializable {
 				findi = new findinfo(b.wv, b, SWT.None);
 			findi.insertAction = findi.none;
 			findi.drawstrAction(findi.insertAction);
-			findi.tree.addSelectionListener(new SelectionListener() {
-				
-				@Override
-				public void widgetSelected(SelectionEvent arg0) {
-					// TODO Auto-generated method stub
-					TreeItem ti = (TreeItem)arg0.item;
-					ti.setBackground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-					ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-				}
-				
-				@Override
-				public void widgetDefaultSelected(SelectionEvent arg0) {
-					// TODO Auto-generated method stub
-					
-				}
-			});
-			
-			//对预定义文件中的条目的顺序进行分组
+
+			// 对预定义文件中的条目的顺序进行分组
 			int index = 0;
 			List<TextRegion> tr_no = new ArrayList<TextRegion>();// 完全不匹配的条目
 			List<TextRegion> tr_line = new ArrayList<>();// 当前段落中包含的条目
@@ -2327,9 +2340,11 @@ public class blackAction implements Serializable {
 			hasinfo info = null;
 			List<TextRegion> al = setindexOfMarkstatBy();
 			Iterator<TextRegion> it_tr = null;
-			if(al != null) it_tr = al.iterator();
-			else it_tr = markTextData.iterator();
-			
+			if (al != null)
+				it_tr = al.iterator();
+			else
+				it_tr = markTextData.iterator();
+
 			while (it_tr.hasNext()) {
 				TextRegion tr = it_tr.next();
 				// 如果当前预定义条目中包含编辑器光标前一个字符，就将其放到前面
@@ -2337,12 +2352,14 @@ public class blackAction implements Serializable {
 					TreeItem ti = new TreeItem(findi.tree, SWT.None);
 					// ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLUE));
 					info = markstatIshas(tr.text);
-					if(!info.ishas)ti.setText(tr.text+" ("+lastchar+")");
-					else{
+					if (!info.ishas)
+						ti.setText(tr.text + " (" + lastchar + ")");
+					else {
 						markstat stat = markstat.get(info.index);
-						if(info.index == markstat.size()-1)
-							ti.setText(tr.text+" ("+lastchar+")"+"(上次所选)"+"("+stat.count+")");
-						else ti.setText(tr.text+" ("+lastchar+")"+"("+stat.count+")");
+						if (info.index == markstat.size() - 1)
+							ti.setText(tr.text + " (" + lastchar + ")" + "(上次所选)" + "(" + stat.count + ")");
+						else
+							ti.setText(tr.text + " (" + lastchar + ")" + "(" + stat.count + ")");
 						stat.visible = false;
 					}
 					ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLUE));
@@ -2350,9 +2367,9 @@ public class blackAction implements Serializable {
 					ti.setData("textregion", tr);
 					ti.setData("index", index);
 					index++;
-				}else if((info=markstatIshas(tr.text)).ishas){
+				} else if ((info = markstatIshas(tr.text)).ishas) {
 					markstat.get(info.index).visible = true;
-				}else if (cheakDocument.findString(line, tr.text)) {
+				} else if (cheakDocument.findString(line, tr.text)) {
 					tr_line.add(tr);
 				} else if (cheakDocument.findString(doc, tr.text)) {
 					tr_doc.add(tr);
@@ -2360,96 +2377,90 @@ public class blackAction implements Serializable {
 					tr_no.add(tr);
 				}
 			}
-			
-			//将频率arraylist中最后的条目最先呈现出来
-			if(markstat.size() > 0){
-				markstat stat = markstat.get(markstat.size()-1);
-				if(stat.visible){
+
+			// 将频率arraylist中最后的条目最先呈现出来
+			if (markstat.size() > 0) {
+				markstat stat = markstat.get(markstat.size() - 1);
+				if (stat.visible) {
 					TextRegion trstat = new TextRegion(stat.text, 0, 0);
 					TreeItem ti = new TreeItem(findi.tree, SWT.None);
-					if(stat.count > 1 && stat.count <= 5){
-						ti.setBackground(SWTResourceManager.getColor(250,254,90));
+					if (stat.count > 1 && stat.count <= 5) {
+						ti.setBackground(SWTResourceManager.getColor(250, 254, 90));
 						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-					}
-					else if(stat.count > 5 && stat.count <= 10){
-						ti.setBackground(SWTResourceManager.getColor(249,254,56));
+					} else if (stat.count > 5 && stat.count <= 10) {
+						ti.setBackground(SWTResourceManager.getColor(249, 254, 56));
 						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-					}
-					else if(stat.count > 10 && stat.count <= 20){
-						ti.setBackground(SWTResourceManager.getColor(248,254,10));
+					} else if (stat.count > 10 && stat.count <= 20) {
+						ti.setBackground(SWTResourceManager.getColor(248, 254, 10));
 						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-					}
-					else if(stat.count > 20){
-						ti.setBackground(SWTResourceManager.getColor(191,197,1));
+					} else if (stat.count > 20) {
+						ti.setBackground(SWTResourceManager.getColor(191, 197, 1));
 						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-					}else{
-						ti.setBackground(SWTResourceManager.getColor(251,254,126));
+					} else {
+						ti.setBackground(SWTResourceManager.getColor(251, 254, 126));
 						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 					}
 					ti.setFont(SWTResourceManager.getFont("微软雅黑", 11, SWT.BOLD));
-					ti.setText(trstat.text+" (上次所选)"+"("+markstat.get(markstat.size()-1).count+")");
-					ti.setData("textregion", trstat);
-					ti.setData("index", index);
-					index++;
-				}	
-			}
-			
-			for(int i=0;i<markstat.size()-1;i++){
-				markstat stat = markstat.get(i);
-				if(stat.visible){
-					TextRegion trstat = new TextRegion(markstat.get(i).text, 0, 0);
-					TreeItem ti = new TreeItem(findi.tree, SWT.None);
-					if(stat.count > 1 && stat.count <= 5){
-						ti.setBackground(SWTResourceManager.getColor(250,254,90));
-						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-					}
-					else if(stat.count > 5 && stat.count <= 10){
-						ti.setBackground(SWTResourceManager.getColor(249,254,56));
-						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-					}
-					else if(stat.count > 10 && stat.count <= 20){
-						ti.setBackground(SWTResourceManager.getColor(248,254,10));
-						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-					}
-					else if(stat.count > 20){
-						ti.setBackground(SWTResourceManager.getColor(191,197,1));
-						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-					}else{
-						ti.setBackground(SWTResourceManager.getColor(251,254,126));
-						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-					}
-					ti.setFont(SWTResourceManager.getFont("微软雅黑", 11, SWT.BOLD));
-					ti.setText(trstat.text+"("+markstat.get(i).count+")");
+					ti.setText(trstat.text + " (上次所选)" + "(" + markstat.get(markstat.size() - 1).count + ")");
 					ti.setData("textregion", trstat);
 					ti.setData("index", index);
 					index++;
 				}
 			}
-			
+
+			for (int i = 0; i < markstat.size() - 1; i++) {
+				markstat stat = markstat.get(i);
+				if (stat.visible) {
+					TextRegion trstat = new TextRegion(markstat.get(i).text, 0, 0);
+					TreeItem ti = new TreeItem(findi.tree, SWT.None);
+					if (stat.count > 1 && stat.count <= 5) {
+						ti.setBackground(SWTResourceManager.getColor(250, 254, 90));
+						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					} else if (stat.count > 5 && stat.count <= 10) {
+						ti.setBackground(SWTResourceManager.getColor(249, 254, 56));
+						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					} else if (stat.count > 10 && stat.count <= 20) {
+						ti.setBackground(SWTResourceManager.getColor(248, 254, 10));
+						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					} else if (stat.count > 20) {
+						ti.setBackground(SWTResourceManager.getColor(191, 197, 1));
+						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					} else {
+						ti.setBackground(SWTResourceManager.getColor(251, 254, 126));
+						ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+					}
+					ti.setFont(SWTResourceManager.getFont("微软雅黑", 11, SWT.BOLD));
+					ti.setText(trstat.text + "(" + markstat.get(i).count + ")");
+					ti.setData("textregion", trstat);
+					ti.setData("index", index);
+					index++;
+				}
+			}
+
 			Iterator<TextRegion> it_line = tr_line.iterator();
-			while(it_line.hasNext()){
+			while (it_line.hasNext()) {
 				TextRegion trline = it_line.next();
 				TreeItem ti = new TreeItem(findi.tree, SWT.None);
 				ti.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.BOLD));
 				ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
-				ti.setText(trline.text+" (当前段落)");
+				ti.setText(trline.text + " (当前段落)");
 				ti.setData("textregion", trline);
 				ti.setData("index", index);
 				index++;
 			}
-			
+
 			Iterator<TextRegion> it_doc = tr_doc.iterator();
-			while(it_doc.hasNext()){
+			while (it_doc.hasNext()) {
 				TextRegion trdoc = it_doc.next();
 				TreeItem ti = new TreeItem(findi.tree, SWT.None);
 				ti.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN));
 				ti.setFont(SWTResourceManager.getFont("微软雅黑", 9, SWT.BOLD));
-				ti.setText(trdoc.text+" (当前文档)");
+				ti.setText(trdoc.text + " (当前文档)");
 				ti.setData("textregion", trdoc);
 				ti.setData("index", index);
 				index++;
 			}
-			
+
 			Iterator<TextRegion> it_no = tr_no.iterator();
 			while (it_no.hasNext()) {
 				TextRegion trno = it_no.next();
@@ -2464,303 +2475,330 @@ public class blackAction implements Serializable {
 			findi.setVisible(true);
 		}
 	}
-	public void saveGitInfo(String host,String username,String password){
+
+	public void saveGitInfo(String host, String username, String password) {
 		b.projectProperties.setProperty("GitHost", host);
 		b.projectProperties.setProperty("GitUsername", username);
 		b.projectProperties.setProperty("GitPassword", password);
 		saveProjectCFG();
 	}
+
 	/**
 	 * 为当前编辑的项目设置git目录
 	 */
-	public void setGitRespositoryPath(){
+	public void setGitRespositoryPath() {
 		try {
-			if(!isHasGitDir())
+			if (!isHasGitDir())
 				gitTool.createGitRepository(b.projectFile.getParent());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
-		} catch(IllegalStateException e){
-			addlogs(null,e);
+			addlogs(null, e);
+		} catch (IllegalStateException e) {
+			addlogs(null, e);
 		}
 		try {
 			gitTool.createNewBranch(b.projectProperties.getProperty("projectName"), b.projectFile.getParent());
 		} catch (RefAlreadyExistsException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (RefNotFoundException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (InvalidRefNameException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		}
 	}
-	public void changeBranch(String branchName){
+
+	public void changeBranch(String branchName) {
 		try {
-			gitTool.changeBranch( b.projectFile.getParent(),branchName);
+			gitTool.changeBranch(b.projectFile.getParent(), branchName);
 		} catch (RefAlreadyExistsException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (RefNotFoundException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (InvalidRefNameException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (CheckoutConflictException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		}
 	}
-	public boolean isHasGitDir(){
-		File dir = new File(b.projectFile.getParent()+"\\.git");
-		if(dir.exists() && dir.list().length > 0) return true;
-		else return false;
+
+	public boolean isHasGitDir() {
+		File dir = new File(b.projectFile.getParent() + "\\.git");
+		if (dir.exists() && dir.list().length > 0)
+			return true;
+		else
+			return false;
 	}
-	public ArrayList<RevCommit> getCommits(String[] branchNames){
+
+	public ArrayList<RevCommit> getCommits(String[] branchNames) {
 		ArrayList<RevCommit> al = null;
 		try {
 			al = gitTool.getCommitsFromBranch(b.projectFile.getParent(), branchNames);
 		} catch (NoHeadException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		}
 		return al;
 	}
-	public List<DiffEntry> commit(String message,boolean quiet){
-		if(!isHasGitDir()) setGitRespositoryPath();
+
+	public List<DiffEntry> commit(String message, boolean quiet) {
+		if (!isHasGitDir())
+			setGitRespositoryPath();
 		changeBranch(b.projectProperties.getProperty("projectName"));
 		String mess = null;
 		List<DiffEntry> commit = null;
-		if(message == null)
-			mess = time.getCurrentDate("-")+"("+time.getCurrentTime().replace(":", "点")+"分)"+"项目备份";
-		else mess = message;
+		if (message == null)
+			mess = time.getCurrentDate("-") + "(" + time.getCurrentTime().replace(":", "点") + "分)" + "项目备份";
+		else
+			mess = message;
 		try {
 			commit = gitTool.commit(b.projectFile.getParent(), mess);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		}
-		if(!quiet && commit != null){
+		if (!quiet && commit != null) {
 			StringBuilder sb = new StringBuilder();
-			for(DiffEntry diff:commit){
-				sb.append(diff.getNewPath()+"\n");
+			for (DiffEntry diff : commit) {
+				sb.append(diff.getNewPath() + "\n");
 			}
 			getBMessageBox("更改的文件", sb.toString());
 		}
 		Iterable<RevCommit> log = getCommitLogsFormLocalRespository();
 		return commit;
 	}
-	public boolean gitSetUp(){
+
+	public boolean gitSetUp() {
 		String host = b.projectProperties.getProperty("GitHost");
 		String username = b.projectProperties.getProperty("GitUsername");
 		String password = b.projectProperties.getProperty("GitPassword");
-		if(host != null && username != null && password != null && isHasGitDir()) return true;
-		else return false;
+		if (host != null && username != null && password != null && isHasGitDir())
+			return true;
+		else
+			return false;
 	}
-	public Iterable<PushResult> push(String host,String username,String password,boolean quiet){
+
+	public Iterable<PushResult> push(String host, String username, String password, boolean quiet) {
 		Iterable<PushResult> pushToRemote = null;
 		try {
-			pushToRemote = gitTool.pushToRemote(b.projectFile.getParent(),host, username, password, true);
+			pushToRemote = gitTool.pushToRemote(b.projectFile.getParent(), host, username, password, true);
 		} catch (InvalidRemoteException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (TransportException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		}
-		if(!quiet && pushToRemote != null){
+		if (!quiet && pushToRemote != null) {
 			StringBuilder sb = new StringBuilder();
-			for(PushResult pr:pushToRemote){
+			for (PushResult pr : pushToRemote) {
 				Collection<RemoteRefUpdate> remoteUpdates = pr.getRemoteUpdates();
-				for(RemoteRefUpdate rru:remoteUpdates){
-					sb.append(rru+"\n");
+				for (RemoteRefUpdate rru : remoteUpdates) {
+					sb.append(rru + "\n");
 				}
 			}
 			getBMessageBox("上传结果", sb.toString());
-		}	
+		}
 		return pushToRemote;
 	}
-	public Iterable<RevCommit> getCommitLogsFormLocalRespository(){
+
+	public Iterable<RevCommit> getCommitLogsFormLocalRespository() {
 		Iterable<RevCommit> rev = null;
 		try {
 			rev = gitTool.getCommitInfoFromLocalRespository(b.projectFile.getParent());
 		} catch (NoHeadException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		}
 		return rev;
 	}
-	public Collection<Ref> getAllBranchFromRemote(){
+
+	public Collection<Ref> getAllBranchFromRemote() {
 		String host = b.projectProperties.getProperty("GitHost");
 		String username = b.projectProperties.getProperty("GitUsername");
 		String password = b.projectProperties.getProperty("GitPassword");
-		if(host == null || username == null || password == null) return null;
+		if (host == null || username == null || password == null)
+			return null;
 		Collection<Ref> allBranchFromRemote = null;
 		try {
-			 allBranchFromRemote = gitTool.getAllBranchFromRemote(host, username, password);
+			allBranchFromRemote = gitTool.getAllBranchFromRemote(host, username, password);
 		} catch (InvalidRemoteException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (TransportException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		}
 		return allBranchFromRemote;
 	}
-	public void addlogs(String log,Exception e){
-		if(e == null)
-			logsmessage.append("["+time.getCurrentDate("-")+" "+time.getCurrentTime()+"] " + log+"\n");
-		else{
-			logsmessage.append("["+time.getCurrentDate("-")+" "+time.getCurrentTime()+"] " 
-			+ "("+e.getStackTrace()[0].getClassName()+" "
-			+ e.getStackTrace()[0].getMethodName()+" "
-			+ e.getStackTrace()[0].getLineNumber()+"行 ："
-			+ e.getMessage()+"\n");
-			progressMessage = "操作失败: "+e.getMessage();
-			//if(!e.getClass().getSimpleName().equals("IllegalStateException"))
+
+	public void addlogs(String log, Exception e) {
+		if (e == null)
+			logsmessage.append("[" + time.getCurrentDate("-") + " " + time.getCurrentTime() + "] " + log + "\n");
+		else {
+			logsmessage.append("[" + time.getCurrentDate("-") + " " + time.getCurrentTime() + "] " + "("
+					+ e.getStackTrace()[0].getClassName() + " " + e.getStackTrace()[0].getMethodName() + " "
+					+ e.getStackTrace()[0].getLineNumber() + "行 ：" + e.getMessage() + "\n");
+			progressMessage = "操作失败: " + e.getMessage();
+			// if(!e.getClass().getSimpleName().equals("IllegalStateException"))
 			progressBugStop = true;
 		}
 	}
-	
-	public void deleteBranchFromRemote(String branchName,boolean local){
+
+	public void deleteBranchFromRemote(String branchName, boolean local) {
 		String host = b.projectProperties.getProperty("GitHost");
 		String username = b.projectProperties.getProperty("GitUsername");
 		String password = b.projectProperties.getProperty("GitPassword");
-		if(host == null || username == null || password == null) return;
-		
+		if (host == null || username == null || password == null)
+			return;
+
 		try {
-			gitTool.deleteBranchFromRemote(b.projectFile.getParent(), host, branchName, local,username, password);
+			gitTool.deleteBranchFromRemote(b.projectFile.getParent(), host, branchName, local, username, password);
 		} catch (InvalidRemoteException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (TransportException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		}
 	}
-	public void copyBranchFromeRemote(String dirpath,String branchName,Collection<String> branchs, boolean all){
+
+	public void copyBranchFromeRemote(String dirpath, String branchName, Collection<String> branchs, boolean all) {
 		String host = b.projectProperties.getProperty("GitHost");
 		String username = b.projectProperties.getProperty("GitUsername");
 		String password = b.projectProperties.getProperty("GitPassword");
-		if(host == null || username == null || password == null) return;
-		
+		if (host == null || username == null || password == null)
+			return;
+
 		try {
-			gitTool.CloneFromRemote(dirpath, host, all, branchs,branchName, username, password);
+			gitTool.CloneFromRemote(dirpath, host, all, branchs, branchName, username, password);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
-		} catch (JGitInternalException e){
-			addlogs(null,e);
+			addlogs(null, e);
+		} catch (JGitInternalException e) {
+			addlogs(null, e);
 		}
 	}
-	public void createBranch(String branchName){
+
+	public void createBranch(String branchName) {
 		String host = b.projectProperties.getProperty("GitHost");
 		String username = b.projectProperties.getProperty("GitUsername");
 		String password = b.projectProperties.getProperty("GitPassword");
-		if(host == null || username == null || password == null) return;
+		if (host == null || username == null || password == null)
+			return;
 		try {
 			gitTool.createNewBranch(branchName, b.projectFile.getParent());
 		} catch (RefAlreadyExistsException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 			return;
 		} catch (RefNotFoundException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 			return;
 		} catch (InvalidRefNameException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 			return;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 			return;
 		} catch (GitAPIException e) {
 			// TODO Auto-generated catch block
-			addlogs(null,e);
+			addlogs(null, e);
 			return;
 		}
-		push(host,username,password,true);
+		push(host, username, password, true);
 	}
-	public void setProgressInfo(String message,int progressValue){
-		if(!progressBugStop){
+
+	public void setProgressInfo(String message, int progressValue) {
+		if (!progressBugStop) {
 			progressMessage = message;
 			this.progressValue = progressValue;
-		}
-		else return;
+		} else
+			return;
 	}
+
 	/**
 	 * 获取在项目文件中储存的git远程仓库凭据
+	 * 
 	 * @return包含远程仓库url地址、用户名和密码的字符串数组
 	 */
-	public String[] getGitInfo(){
+	public String[] getGitInfo() {
 		String host = b.projectProperties.getProperty("GitHost");
 		String username = b.projectProperties.getProperty("GitUsername");
 		String password = b.projectProperties.getProperty("GitPassword");
-		if(host == null || username == null || password == null) return null;
-		else return new String[]{host,username,password};
+		if (host == null || username == null || password == null)
+			return null;
+		else
+			return new String[] { host, username, password };
 	}
-	public void gitWorking(String host,String username,String password){
+
+	public void gitWorking(String host, String username, String password) {
 		StringBuilder sb = new StringBuilder();
 		new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				b.getDisplay().asyncExec(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						showProgress showPro = new showProgress(b){
+						showProgress showPro = new showProgress(b) {
 							@Override
 							void actionInOtherThread() {
 								// TODO Auto-generated method stub
@@ -2779,70 +2817,71 @@ public class blackAction implements Serializable {
 			}
 		}).start();
 		new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				List<DiffEntry> commit = commit(null,true);
+				List<DiffEntry> commit = commit(null, true);
 				setProgressInfo("正在将本地仓库更改同步到远程仓库", 30);
-				
-				Iterable<PushResult> push = push(host,username,password,true);
+
+				Iterable<PushResult> push = push(host, username, password, true);
 				setProgressInfo("已将更改同步至远程仓库，开始加载同步结果...", 70);
-				if(commit != null)
-					for(DiffEntry diff:commit){
-						sb.append(diff.getNewPath()+"\n");
+				if (commit != null)
+					for (DiffEntry diff : commit) {
+						sb.append(diff.getNewPath() + "\n");
 					}
 				setProgressInfo("已获取文件更改信息，开始获取服务器返回结果...", 80);
 				sb.append("-------------------\n远程仓库返回值：\n");
 				ArrayList<String> al = new ArrayList<>();
 				int count = 0;
-				if(push != null)
-					for(PushResult pr:push){
+				if (push != null)
+					for (PushResult pr : push) {
 						Collection<RemoteRefUpdate> remoteUpdates = pr.getRemoteUpdates();
-						for(RemoteRefUpdate rru:remoteUpdates){
-							sb.append("远程分支名： "+rru.getRemoteName()+"\n");
-							sb.append("对象ID： "+rru.getNewObjectId()+"\n");
-							sb.append("更改备注： "+rru.getMessage()+"\n");
-							sb.append("是否删除： "+rru.isDelete()+"\n");
-							sb.append("强制更新： "+rru.isForceUpdate()+"\n");
-							sb.append("状态： "+rru.getStatus()+"\n");
-							if(rru.getStatus().toString().equals("OK")){
+						for (RemoteRefUpdate rru : remoteUpdates) {
+							sb.append("远程分支名： " + rru.getRemoteName() + "\n");
+							sb.append("对象ID： " + rru.getNewObjectId() + "\n");
+							sb.append("更改备注： " + rru.getMessage() + "\n");
+							sb.append("是否删除： " + rru.isDelete() + "\n");
+							sb.append("强制更新： " + rru.isForceUpdate() + "\n");
+							sb.append("状态： " + rru.getStatus() + "\n");
+							if (rru.getStatus().toString().equals("OK")) {
 								count++;
 								al.add(rru.getRemoteName());
 							}
 						}
 					}
-				sb.append("\n================\n同步的分支"+"("+al.size()+")"+"：\n");
-				for(String str:al){
-					sb.append(str+"\n");
+				sb.append("\n================\n同步的分支" + "(" + al.size() + ")" + "：\n");
+				for (String str : al) {
+					sb.append(str + "\n");
 				}
 				setProgressInfo("同步成功！", 100);
 			}
 		}).start();
 	}
-//	public void showPushResult(){
-//		
-//		if(push != null)
-//			for(PushResult pr:push){
-//				Collection<RemoteRefUpdate> remoteUpdates = pr.getRemoteUpdates();
-//				for(RemoteRefUpdate rru:remoteUpdates){
-//					sb.append("远程分支名： "+rru.getRemoteName()+"\n");
-//					sb.append("对象ID： "+rru.getNewObjectId()+"\n");
-//					sb.append("更改备注： "+rru.getMessage()+"\n");
-//					sb.append("是否删除： "+rru.isDelete()+"\n");
-//					sb.append("强制更新： "+rru.isForceUpdate()+"\n");
-//					sb.append("状态： "+rru.getStatus()+"\n");
-//					if(rru.getStatus().toString().equals("OK")){
-//						count++;
-//						al.add(rru.getRemoteName());
-//					}
-//				}
-//			}
-//		sb.append("\n================\n同步的分支：\n");
-//		for(String str:al){
-//			sb.append(str+"\n");
-//		}
-//	}
+
+	// public void showPushResult(){
+	//
+	// if(push != null)
+	// for(PushResult pr:push){
+	// Collection<RemoteRefUpdate> remoteUpdates = pr.getRemoteUpdates();
+	// for(RemoteRefUpdate rru:remoteUpdates){
+	// sb.append("远程分支名： "+rru.getRemoteName()+"\n");
+	// sb.append("对象ID： "+rru.getNewObjectId()+"\n");
+	// sb.append("更改备注： "+rru.getMessage()+"\n");
+	// sb.append("是否删除： "+rru.isDelete()+"\n");
+	// sb.append("强制更新： "+rru.isForceUpdate()+"\n");
+	// sb.append("状态： "+rru.getStatus()+"\n");
+	// if(rru.getStatus().toString().equals("OK")){
+	// count++;
+	// al.add(rru.getRemoteName());
+	// }
+	// }
+	// }
+	// sb.append("\n================\n同步的分支：\n");
+	// for(String str:al){
+	// sb.append(str+"\n");
+	// }
+	// }
 	public void findInfo() {
 		if (b.text.getSelectionCount() == 0) {
 			Runnable runn = new Runnable() {
@@ -2869,7 +2908,6 @@ public class blackAction implements Serializable {
 		}
 
 	}
-
 
 	public String[] getALLFonts() {
 		FontData[] fonts = b.getDisplay().getFontList(null, true);
@@ -4012,7 +4050,8 @@ class fileInfo {
 		this.showname = showname;
 	}
 }
-class markstat implements Serializable{
+
+class markstat implements Serializable {
 	/**
 	 * 
 	 */
@@ -4020,15 +4059,18 @@ class markstat implements Serializable{
 	public String text;
 	public int count;
 	public boolean visible;
-	public markstat(String text, int count){
+
+	public markstat(String text, int count) {
 		this.text = text;
 		this.count = count;
 	}
 }
-class hasinfo{
+
+class hasinfo {
 	boolean ishas;
 	int index;
-	public hasinfo(boolean ishas,int index){
+
+	public hasinfo(boolean ishas, int index) {
 		this.ishas = ishas;
 		this.index = index;
 	}

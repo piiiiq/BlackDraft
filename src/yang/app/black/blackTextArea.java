@@ -930,6 +930,21 @@ public class blackTextArea implements Serializable {
 				black.ba.copyText(st);
 			}
 		});
+		MenuItem copy = black.ba.getMenuItem(menu, "复制（不包含标题）", SWT.NONE);
+		copy.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				black.ba.copyWithoutDocumentTitle();
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		MenuItem menupaset = new MenuItem(menu, SWT.CONTROL);
 		menupaset.setText("粘贴为纯文本	Ctrl+V");
 		menupaset.addSelectionListener(new SelectionListener() {
