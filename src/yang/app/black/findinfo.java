@@ -42,7 +42,7 @@ public class findinfo extends Shell implements Serializable{
 	Tree tree;
 	static int text_oldKeyArrowUpAction,text_oldKeyArrowDownAction,text_oldKeyEnterAction,text_oldAltEnterAction,text_oldAltAction
 	,oldkeyone,oldkeytwo;
-	checkKey keyUp, keyDown, keyEnter, keyAltEnter,keyone,keytwo;
+	checkKey keyUp, keyDown, keyEnter, keyAltEnter,keyone,keytwo,del;
 	MouseListener ml;
 	KeyListener kl;
 	CaretListener cl;
@@ -84,6 +84,22 @@ public class findinfo extends Shell implements Serializable{
 			b.blackTextArea.removeKeyAction(b.blackTextArea.keyenter);
 			b.text.setKeyBinding(49, -1);
 			b.text.setKeyBinding(50, -1);
+			
+			del = new checkKey(127) {
+				
+				@Override
+				public void action() {
+					// TODO Auto-generated method stub
+					if(tree.getSelectionCount() == 1){
+						TreeItem[] selection = tree.getSelection();
+						TextRegion tr = (TextRegion)selection[0].getData("textregion");
+						String text = tr.text;
+						b.ba.deleteFromMarkStatData(text);
+						selection[0].setText(selection[0].getText()+"[ÒÑÒÆ³ý]");
+					}
+				}
+			};
+			b.blackTextArea.addKeyAction(del);
 			
 			keyUp = new checkKey(SWT.ARROW_UP) {
 				
@@ -247,6 +263,7 @@ public class findinfo extends Shell implements Serializable{
 				b.blackTextArea.removeKeyAction(keyAltEnter);
 				b.blackTextArea.removeKeyAction(keyone);
 				b.blackTextArea.removeKeyAction(keytwo);
+				b.blackTextArea.removeKeyAction(del);
 				b.text.removeMouseListener(ml);
 				b.text.removeCaretListener(cl);
 				b.text.removeKeyListener(kl);
@@ -329,7 +346,7 @@ public class findinfo extends Shell implements Serializable{
 				// TODO Auto-generated method stub
 				if(drawstr != null){
 					TextLayout tl = new TextLayout(getDisplay());
-					Font font = SWTResourceManager.getFont("Î¢ÈíÑÅºÚ", 9, SWT.NONE);
+					Font font = SWTResourceManager.getFont("Î¢ÈíÑÅºÚ", 8, SWT.NONE);
 					if(font != null)
 						tl.setFont(font);
 					

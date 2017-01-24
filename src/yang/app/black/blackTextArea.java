@@ -129,23 +129,24 @@ public class blackTextArea implements Serializable {
 		st.setKeyBinding(SWT.CTRL | 'm', -1);
 		st.setKeyBinding(SWT.HOME, ST.TEXT_START);
 		st.setKeyBinding(SWT.END, -1);
+		st.setKeyBinding(127, -1);
 		st.setKeyBinding(13, -1);
 		st.setKeyBinding(16777225, -1);// 屏蔽改写模式按键
 
-		// st.addKeyListener(new KeyListener() {
-		//
-		// @Override
-		// public void keyReleased(KeyEvent arg0) {
-		// // TODO Auto-generated method stub
-		//
-		// }
-		//
-		// @Override
-		// public void keyPressed(KeyEvent arg0) {
-		// // TODO Auto-generated method stub
-		// System.out.println(arg0.keyCode);
-		// }
-		// });
+//		 st.addKeyListener(new KeyListener() {
+//		
+//		 @Override
+//		 public void keyReleased(KeyEvent arg0) {
+//		 // TODO Auto-generated method stub
+//			 
+//		 }
+//		
+//		 @Override
+//		 public void keyPressed(KeyEvent arg0) {
+//		 // TODO Auto-generated method stub
+//			 System.out.println(arg0.keyCode);
+//		 }
+//		 });
 
 		ck_enter = new checkKey(13) {
 
@@ -1284,8 +1285,12 @@ public class blackTextArea implements Serializable {
 				// TODO Auto-generated method stub
 				if (black.wv != null && !black.wv.isDisposed()) {
 					if (black.wv.getAlpha() == 255)
+						black.wv.setAlpha(200);
+					else if(black.wv.getAlpha() == 200)
+						black.wv.setAlpha(150);
+					else if(black.wv.getAlpha() == 150)
 						black.wv.setAlpha(100);
-					else
+					else if(black.wv.getAlpha() == 100)
 						black.wv.setAlpha(255);
 				}
 			}

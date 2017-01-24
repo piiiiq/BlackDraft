@@ -2232,7 +2232,20 @@ public class blackAction implements Serializable {
 		}
 
 	}
-
+	/**
+	 * 将给定的文本从预定义统计Arraylist中删除
+	 * @param text
+	 */
+	void deleteFromMarkStatData(String text){
+		for(int i=0;i<markstat.size();i++){
+			markstat markst = markstat.get(i);
+			if(markst.text.equals(text)){
+				markstat.remove(i);
+				break;
+			}
+		}
+		markstatIsChanged = true;
+	}
 	/**
 	 * 判断给定的字符串是否在频率统计arraylist中存在
 	 * 

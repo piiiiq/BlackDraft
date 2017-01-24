@@ -52,7 +52,7 @@ public class keyAction {
 			@Override
 			public void action() {
 				// TODO Auto-generated method stub
-				if(bta.black.wv != null && !bta.black.wv.isDisposed()){
+				if(bta.black.wv != null && !bta.black.wv.isDisposed() && bta.black.ba.isFullScreenWritingView()){
 					int alpha = bta.black.ba.fullscreen.getAlpha();
 					if(alpha == 150)
 						bta.black.ba.fullscreen.setAlpha(200);
