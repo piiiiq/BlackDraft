@@ -30,7 +30,11 @@ public class logShell extends Shell implements Serializable{
 		this.parent = parent;
 		createContents();
 	}
-
+	public logShell(Shell parent,int style){
+		super(parent, style);
+		this.parent = parent;
+		createContents();
+	}
 	/**
 	 * Create contents of the shell.
 	 */
@@ -54,6 +58,7 @@ public class logShell extends Shell implements Serializable{
 		});
 		styledText = new StyledText(this, SWT.READ_ONLY | SWT.WRAP|SWT.V_SCROLL);
 		styledText.setBounds(0, 0, 335, 279);
+		styledText.setFont(SWTResourceManager.getFont("Î¢ÈíÑÅºÚ", 10, SWT.NONE));
 		styledText.setLeftMargin(10);
 		styledText.getCaret().dispose();
 		
@@ -63,6 +68,9 @@ public class logShell extends Shell implements Serializable{
 		if(parent.isDisposed()) super.dispose();
 		else hideWindow();
 	}
+//	public void close(){
+//		super.dispose();
+//	}
 	
 	
 	

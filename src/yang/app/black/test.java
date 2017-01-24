@@ -57,18 +57,21 @@ public class test {
     public static String password = "nihaoma,.+";
     
     public static void main(String args[]) throws IOException, JGitInternalException, GitAPIException, URISyntaxException{
-       
-       String path = "d://test//git//test01";
-       String path2 = "C://Users//Administrator//Documents//blacktest//2017.01.133";
-       String[] s = new String[]{"refs/heads/nov","refs/heads/master"};
-       
-       ArrayList<RevCommit> commits = gitTool.getCommitsFromBranch(path, s);
-       for(RevCommit r:commits){
-    	   System.out.println(r.getFullMessage());
-       }
-       
-      
-   
+       String in = "笨蛋布鲁斯布鲁斯·威利斯威利斯布鲁斯·威利斯是个笨蛋";
+       String str = "布鲁斯·威利斯";
+    	int lastIndexOf = blackAction.lastIndexOf(str, in);
+    	System.out.println(lastIndexOf);
+//       String path = "d://test//git//test01";
+//       String path2 = "C://Users//Administrator//Documents//blacktest//2017.01.133";
+//       String[] s = new String[]{"refs/heads/nov","refs/heads/master"};
+//       
+//       ArrayList<RevCommit> commits = gitTool.getCommitsFromBranch(path, s);
+//       for(RevCommit r:commits){
+//    	   System.out.println(r.getFullMessage());
+//       }
+//       
+//      
+//   
     }
     public static Ref getBranch(String repositoryPath,ObjectId id) throws IOException, GitAPIException{
         Git git = new Git(new FileRepository(repositoryPath+"/.git"));

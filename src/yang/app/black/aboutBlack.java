@@ -74,7 +74,7 @@ public class aboutBlack extends Dialog implements Serializable{
 		txtBlackEditor.getCaret().dispose();
 		txtBlackEditor.setLineSpacing(3);
 		txtBlackEditor.setLeftMargin(10);
-		
+		txtBlackEditor.setIME(null);
 		txtBlackEditor.setText(allInfo.aboutblack);
 		txtBlackEditor.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 		txtBlackEditor.setEditable(false);

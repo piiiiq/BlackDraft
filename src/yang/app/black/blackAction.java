@@ -2301,7 +2301,39 @@ public class blackAction implements Serializable {
 		}
 		markstat = al;
 	}
-
+	/**
+	 * 返回一个外国人名中姓和名在给定文本内的最先出现的位置（逆向，从文本最后向前查找）
+	 * @param str外国人名
+	 * @param in文本
+	 * @return
+	 */
+	public static int lastIndexOf(String str,String in){
+		int max = -1;
+		if(str.indexOf('·') != -1){
+			String firstname = str.substring(str.lastIndexOf('·')+1, str.length());
+			String lastname = str.substring(0, str.indexOf('·'));
+			int all = in.lastIndexOf(str);
+			int first = in.lastIndexOf(firstname);
+			int last = in.lastIndexOf(lastname);
+			//姓和名包含在全名内
+			if(last == all && first == all+lastname.length()+1)
+				max = all;
+			else{
+				int[] index = new int[]{all,first,last};
+				for(int i=0;i<index.length;i++){
+					if(index[i] > max){
+						max = index[i];
+					}
+				}
+			}
+		}
+		return max;
+	}
+	
+	/**
+	 * 依照在当前所编辑的文档内先后出现的顺序对预定义条目进行排序
+	 * @return排序后的条目List
+	 */
 	List<TextRegion> setindexOfMarkstatBy() {
 		if (b.text.getCaretOffset() > 0) {
 			String text = b.text.getText(0, b.text.getCaretOffset() - 1);
@@ -2312,7 +2344,13 @@ public class blackAction implements Serializable {
 				int maxindex = 0;
 				for (int i = 0; i < al.size(); i++) {
 					String str = al.get(i).text;
-					int index = text.lastIndexOf(str);
+					int index = 0;
+					//如果是外国人名
+					if(str.indexOf('·') != -1)
+						index = lastIndexOf(str, text);
+					else
+						index = text.lastIndexOf(str);
+					
 					if (index > max) {
 						max = index;
 						maxindex = i;

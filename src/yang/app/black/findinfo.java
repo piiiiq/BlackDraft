@@ -29,6 +29,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
@@ -51,7 +52,7 @@ public class findinfo extends Shell implements Serializable{
 			readonly = 1,
 			none = 3;
 	int insertAction;
-	private logShell shell;
+	private logShell log;
 	private Composite composite;
 	String drawstr;
 	
@@ -113,6 +114,15 @@ public class findinfo extends Shell implements Serializable{
 						}else{
 							tree.setSelection(tree.getItem(tree.getItemCount()-1));
 						}
+						
+						
+						TreeItem item = tree.getSelection()[0];
+						if(item.getBounds().width>tree.getClientArea().width)
+							showMore();
+						else{
+							if(log != null && !log.isDisposed())
+								log.setVisible(false);
+						}
 					}
 				}
 			};
@@ -127,6 +137,13 @@ public class findinfo extends Shell implements Serializable{
 							tree.setSelection(tree.getItem(index+1));
 						}else {
 							tree.setSelection(tree.getItem(0));
+						}
+						TreeItem item = tree.getSelection()[0];
+						if(item.getBounds().width>tree.getClientArea().width)
+							showMore();
+						else{
+							if(log != null && !log.isDisposed())
+								log.setVisible(false);
 						}
 					}
 				}
@@ -404,26 +421,25 @@ public class findinfo extends Shell implements Serializable{
 	public void showMore(){
 		if(tree.getSelectionCount() == 1 && tree.getHorizontalBar().isVisible()){
 			TextRegion tr = ((TextRegion)tree.getSelection()[0].getData("textregion"));
-			if(shell == null)
-				shell = new logShell(this);
-			if(sr == null) {
-				sr = new StyleRange();
-				sr.fontStyle = SWT.BOLD;
-			}
-			shell.setLocation(getLocation().x+getSize().x,getLocation().y);
-			shell.setSize(200, getSize().y);
-			shell.styledText.setText(tr.text);
-			sr.start = 0;
-			sr.length = tr.text.length();
-			shell.styledText.setStyleRange(sr);
-			shell.styledText.append("\n\n");
-			shell.styledText.append("\n来源："+tr.name);
-			shell.styledText.append("\n起始位置："+tr.start);
-			shell.styledText.append("\n结束位置："+tr.end);
+			if(log == null)
+				log = new logShell(this,SWT.RESIZE);
+			
+			log.setSize(getSize().x, getSize().y-50);
+			if(getLocation().y-log.getSize().y >= 0)
+				log.setLocation(getLocation().x,getLocation().y-log.getSize().y);
+			else log.setLocation(getLocation().x,getLocation().y+getSize().y);
+			
+			log.styledText.setText("");
+//			String src = "来源："+tr.name;
+//			shell.styledText.append(src+"\n\n");
+			log.styledText.append(tr.text);
+			
+//			shell.styledText.append("\n起始位置："+tr.start);
+//			shell.styledText.append("\n结束位置："+tr.end);
 			//shell.pack();
-			shell.setVisible(true);
+			log.setVisible(true);
 		}else{
-			if(shell != null && !shell.isDisposed()) shell.setVisible(false);
+			if(log != null && !log.isDisposed()) log.setVisible(false);
 		}
 	}
 	public void insert(){

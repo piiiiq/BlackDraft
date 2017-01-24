@@ -73,7 +73,7 @@ public class black extends mud {
 	public File projectFile;
 	public blackTextArea blackTextArea;
 	public blackAction ba = new blackAction(this);
-	public logShell log = new logShell(this);
+	public logShell log = new logShell(this,SWT.DIALOG_TRIM|SWT.RESIZE);
 	public Properties appProperties = super.getAppProperties();
 	public String backtext;
 	public nameCreator namecreator;
