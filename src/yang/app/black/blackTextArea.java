@@ -132,7 +132,16 @@ public class blackTextArea implements Serializable {
 		st.setKeyBinding(127, -1);
 		st.setKeyBinding(13, -1);
 		st.setKeyBinding(16777225, -1);// 屏蔽改写模式按键
-
+//		st.getVerticalBar().getDisplay().addFilter(SWT.Paint, new Listener() {
+//			
+//			@Override
+//			public void handleEvent(Event arg0) {
+//				// TODO Auto-generated method stub
+//				if(!st.isDisposed()){
+//					st.getVerticalBar().setMaximum(st.getVerticalBar().getMaximum()+500);
+//				}
+//			}
+//		});
 //		 st.addKeyListener(new KeyListener() {
 //		
 //		 @Override

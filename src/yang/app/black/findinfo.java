@@ -403,7 +403,13 @@ public class findinfo extends Shell implements Serializable{
 			@Override
 			public void mouseDown(MouseEvent e) {
 				// TODO Auto-generated method stub
-				showMore();
+				TreeItem item = tree.getSelection()[0];
+				if(item.getBounds().width>tree.getClientArea().width)
+					showMore();
+				else{
+					if(log != null && !log.isDisposed())
+						log.setVisible(false);
+				}
 			}
 			
 			@Override
@@ -428,6 +434,7 @@ public class findinfo extends Shell implements Serializable{
 			if(getLocation().y-log.getSize().y >= 0)
 				log.setLocation(getLocation().x,getLocation().y-log.getSize().y);
 			else log.setLocation(getLocation().x,getLocation().y+getSize().y);
+			Font font = null;
 			
 			log.styledText.setText("");
 //			String src = "À´Ô´£º"+tr.name;

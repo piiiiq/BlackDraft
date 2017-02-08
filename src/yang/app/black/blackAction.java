@@ -126,16 +126,17 @@ public class blackAction implements Serializable {
 	findinfo_result findinfoResult;
 	boolean includeRecycle;
 	public Listener sliderListener;
-	List<TextRegion> markTextData;
 	findWord find;
+	List<TextRegion> markTextData;
 	public String marktext = "";
 	boolean marktextIsChanged, markstatIsChanged;
+	ArrayList<markstat> markstat = new ArrayList<>();
+
 	public Shell fullscreen;
 	boolean fullscreen_writingview;
 	Color lastForeColor, lastBackColor;
 	public int posForTypeMode = 2;
 	PrintStream errorStream, sysErr;
-	ArrayList<markstat> markstat = new ArrayList<>();
 	int progressValue;
 	String progressMessage = "";
 	boolean progressBugStop;
@@ -2566,7 +2567,13 @@ public class blackAction implements Serializable {
 			addlogs(null, e);
 		}
 	}
-
+	public boolean isHasGitDir() {
+		File dir = new File(b.projectFile.getParent() + "\\.git");
+		if (dir.exists() && dir.list().length > 0)
+			return true;
+		else
+			return false;
+	}
 	public void changeBranch(String branchName) {
 		try {
 			gitTool.changeBranch(b.projectFile.getParent(), branchName);
@@ -2591,13 +2598,7 @@ public class blackAction implements Serializable {
 		}
 	}
 
-	public boolean isHasGitDir() {
-		File dir = new File(b.projectFile.getParent() + "\\.git");
-		if (dir.exists() && dir.list().length > 0)
-			return true;
-		else
-			return false;
-	}
+	
 
 	public ArrayList<RevCommit> getCommits(String[] branchNames) {
 		ArrayList<RevCommit> al = null;
@@ -2645,6 +2646,23 @@ public class blackAction implements Serializable {
 		Iterable<RevCommit> log = getCommitLogsFormLocalRespository();
 		return commit;
 	}
+	public Iterable<RevCommit> getCommitLogsFormLocalRespository() {
+		Iterable<RevCommit> rev = null;
+		try {
+			rev = gitTool.getCommitInfoFromLocalRespository(b.projectFile.getParent());
+		} catch (NoHeadException e) {
+			// TODO Auto-generated catch block
+			addlogs(null, e);
+		} catch (GitAPIException e) {
+			// TODO Auto-generated catch block
+			addlogs(null, e);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			addlogs(null, e);
+		}
+		return rev;
+	}
+
 
 	public boolean gitSetUp() {
 		String host = b.projectProperties.getProperty("GitHost");
@@ -2686,23 +2704,7 @@ public class blackAction implements Serializable {
 		return pushToRemote;
 	}
 
-	public Iterable<RevCommit> getCommitLogsFormLocalRespository() {
-		Iterable<RevCommit> rev = null;
-		try {
-			rev = gitTool.getCommitInfoFromLocalRespository(b.projectFile.getParent());
-		} catch (NoHeadException e) {
-			// TODO Auto-generated catch block
-			addlogs(null, e);
-		} catch (GitAPIException e) {
-			// TODO Auto-generated catch block
-			addlogs(null, e);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			addlogs(null, e);
-		}
-		return rev;
-	}
-
+	
 	public Collection<Ref> getAllBranchFromRemote() {
 		String host = b.projectProperties.getProperty("GitHost");
 		String username = b.projectProperties.getProperty("GitUsername");
@@ -2836,7 +2838,7 @@ public class blackAction implements Serializable {
 		else
 			return new String[] { host, username, password };
 	}
-
+	
 	public void gitWorking(String host, String username, String password) {
 		StringBuilder sb = new StringBuilder();
 		new Thread(new Runnable() {
