@@ -1,12 +1,12 @@
 基于SWT库的Black软件已不再更新，后续的Black软件将基于QT库开发，新版Black预览图：
 ------------
-<br><br>
 关键词列表（旧版中的预定义列表）
 ![image](https://github.com/piiiiq/Black/blob/master/images/blackQT.PNG)
 上下文及时检索
 ![image](https://github.com/piiiiq/Black/blob/master/images/blackQTKeywords.PNG)
 <br>
-新版特性：
+<br>
+新版特性：<br>
 =======
 * 完善的项目树管理功能，支持以可视化的方式插入文档、目录、子文档、子目录、关键词列表等
 * 比旧版更完善的打字机卷动功能
