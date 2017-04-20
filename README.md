@@ -1,5 +1,6 @@
 基于SWT库的Black软件已不再更新，后续的Black软件将基于QT库开发，新版Black预览图：
 ------------
+
 关键词列表（旧版中的预定义列表）
 ![image](https://github.com/piiiiq/Black/blob/master/images/blackQT.PNG)
 上下文及时检索
