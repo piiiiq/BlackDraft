@@ -10,7 +10,7 @@
 * 改进的写作视图设置
 * 其他特性
 
-新版还处于测试中，有兴趣者请发送邮件至（beihuiguixian@hotmail.com）向我索取。
+新版还处于测试中，有兴趣者请发送邮件至（beihuiguixian@hotmail.com）索取。
 
 关于旧版程序：<br>
 --------------
