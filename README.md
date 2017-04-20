@@ -43,8 +43,7 @@
 
 下载地址：<br>
 ------------------------
-* github： https://github.com/piiiiq/Black/releases/download/v1.20/Black-1.20.zip
-* 百度网盘: http://pan.baidu.com/s/1qY3zB5q 密码:teyj<br>
+* github： https://github.com/piiiiq/Black/releases/download/1.361/Black-1.361.zip
 
 安装运行：<br>
 --------------------
