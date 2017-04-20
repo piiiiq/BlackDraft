@@ -1,8 +1,8 @@
-基于SWT库的Black软件已不再更新，后续的Black软件将基于QT库开发，新版Black预览图：<br>
+基于SWT库的Black软件已不再更新，后续的Black软件将基于QT库开发，新版Black(基于QT库)预览图：<br>
 ------------
-关键词列表（旧版中的预定义列表）
+关键词列表（旧版中的预定义列表）：
 ![image](https://github.com/piiiiq/Black/blob/master/images/blackQT.PNG)
-上下文及时检索
+上下文及时检索：
 ![image](https://github.com/piiiiq/Black/blob/master/images/blackQTKeywords.PNG)
 
 新版特性：<br>
@@ -18,7 +18,7 @@
 
 新版还处于测试中，有兴趣者请发送邮件至（beihuiguixian@hotmail.com）索取。
 
-关于旧版程序：<br>
+关于旧版（基于SWT库）程序：<br>
 --------------
 软件是自己用来撰写小说草稿的，只支持windows系统，不具备排版，插入图片、表格、公式等功能。受限于SWT-StyledText类的功能，软件甚至不支持段落间距，如果您需要上述这些功能，就不必在这个软件上浪费时间了。<br>
 
