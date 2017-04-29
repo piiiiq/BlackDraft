@@ -57,7 +57,8 @@ Git远程仓库备份步骤：<br>
 下载地址：<br>
 ------------------------
 基于SWT库的最新版（v1.361）：
-* github： https://github.com/piiiiq/Black/releases/download/v1.361/Black-1.361.zip
+* 直接下载最新版： https://github.com/piiiiq/Black/releases/download/v1.361/Black-1.361.zip
+* 或前往软件释出页面选择不同版本下载：https://github.com/piiiiq/Black/releases
 
 安装运行：<br>
 --------------------
