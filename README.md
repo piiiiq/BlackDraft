@@ -1,7 +1,9 @@
 由于SWT界面库的局限性制约了Black程序某些功能的开发，新版本Black程序将弃用SWT库，并逐步移植到QT库继续开发。基于SWT库的Black软件已不再更新（最终版为1.361），后续的Black软件将基于QT库开发，新版Black(基于QT库)预览图：<br>
 ------------
 关键词列表（旧版中的预定义列表）：
-![image](https://github.com/piiiiq/Black/blob/master/images/blackQT.PNG)
+![image](https://github.com/piiiiq/Black/blob/master/images/捕获2.PNG)
+关键词列表及上下文预览
+![image](https://github.com/piiiiq/Black/blob/master/images/捕获3.PNG)
 上下文及时检索：
 ![image](https://github.com/piiiiq/Black/blob/master/images/blackQTKeywords.PNG)
 
@@ -9,6 +11,7 @@
 -------
 * 完善的项目树管理功能，支持以可视化的方式插入文档、目录、子文档、子目录、关键词列表等
 * 改进的关键词列表（旧版中的预定义列表）预测与排序算法（可根据上下文动态显示关键词，并能记忆调频数据，减少翻页选词的机率）
+* 关键词列表支持以字母键选择条目
 * 可在一个项目内编辑/管理多部作品、定义多个关键词列表
 * 关键词及时检索与预览（随时检索某一关键词，并快速预览关键词最后出现时的上下文关系，方便长篇小说创作）
 * 快速在文档位置间跳转
