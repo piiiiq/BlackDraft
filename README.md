@@ -19,7 +19,10 @@
 *	更多功能参阅使用指南，或自行探索。
 #### 下载链接：
 * 百度网盘：https://pan.baidu.com/s/1sB8N7PBgE7Rtzp0MztLP6A 提取码: u7h2
-
-P.S. Github网站访问太慢，想上传几张图片来着，但上传几次都失败了，上传应用包更不可能，只能放弃，下载地址改为外部网址。
-
-
+##### 下面是软件运行截图
+###### <center>普通视图</center>
+![image](https://s2.ax1x.com/2020/02/15/1z6l6A.md.png)<br>
+###### <center>写作视图</center><br>
+![image](https://s2.ax1x.com/2020/02/15/1z68mt.md.png)<br>
+###### <center>精简视图</center><br>
+![image](https://s2.ax1x.com/2020/02/15/1z6mFO.md.png)<br>
