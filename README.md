@@ -18,6 +18,7 @@
 * 对称类标点高亮，对括号、书名号、中文引号等对称类标点进行高亮，便于审阅内容；
 *	更多功能参阅使用指南，或自行探索。
 #### 下载链接：
+* PC6下载站 http://www.pc6.com/softview/SoftView_738201.html
 * 百度网盘：https://pan.baidu.com/s/1sB8N7PBgE7Rtzp0MztLP6A 提取码: u7h2
 ##### 下面是软件运行截图
 ###### <center>普通视图</center>
