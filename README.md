@@ -18,8 +18,8 @@
 * 对称类标点高亮，对括号、书名号、中文引号等对称类标点进行高亮，便于审阅内容；
 *	更多功能参阅使用指南，或自行探索。
 #### 下载链接：
-* PC6下载站 http://www.pc6.com/softview/SoftView_738201.html
-* 百度网盘：https://pan.baidu.com/s/1sB8N7PBgE7Rtzp0MztLP6A 提取码: u7h2
+* PC6下载站（应该是最新版本） http://www.pc6.com/softview/SoftView_738201.html
+* 可以在搜索引擎里搜索BlackDraft，在更多下载站里下载，不过不能保证下载站里提供的是最新版本
 ##### 下面是软件运行截图
 ###### <center>普通视图</center>
 ![image](https://s2.ax1x.com/2020/02/15/1z6l6A.md.png)<br>
