@@ -22,7 +22,7 @@
 国内的原因，访问github可能很慢，下载有时会失败，失败后点击“帮助”菜单->“检查更新”可重复尝试下载，更新下载支持断点续传，会基于已经下载的部分继续下载，下载失败多试几次即可。<br>
 实在无法下载请自行从[Releases](https://github.com/piiiiq/BlackDraft/releases "下载页面") 页面下载增量更新包（更新包的大小目前在1MB以内），将更新包放到程序根目录下的update文件夹内（不要解压缩和重命名，更新包名字是更新的版本号加.zip，如果下载的zip文件名有错请自行更名，错误的名字会导致无法更新），重启程序即可自动升级，前提是你的程序已经是0.668或更高版本。
 ##### 推荐使用自动更新和增量更新来升级软件，以便缩小下载数据量和保留自定义配置。
-![Total visitor](https://visitor-count-badge.herokuapp.com/total.svg?repo_id=${piiiiq+BlackDraft})
+![Total visitor](https://visitor-count-badge.herokuapp.com/total.svg?repo_id=${piiiiqBlackDraft})
 
 #### 下载链接：
 见[Releases](https://github.com/piiiiq/BlackDraft/releases "下载页面") 页面。
