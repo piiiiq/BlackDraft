@@ -1,10 +1,3 @@
-#### BlackDraft基于下面这些项目开发，在此感谢这些项目的开发者
-* QTJAMBI - QT框架(C++)的Java封装版本，为Java编程语言提供了高效、易用、基于操作系统平台构建的本地化界面库(sourceforge.net/projects/qtjambi)
-* HanLP - 以Java语言编写的中文语言处理工具包(github.com/hankcs/HanLP/)
-* JGIT - Git的Java封装版本(www.eclipse.org/jgit/)
-* PINYIN4J - 文本转拼音支持(pinyin4j.sourceforge.net)
-* WINRUN4J - 基于Exe可执行文件的Java引导启动器(github.com/poidasmith/winrun4j)
- 
 ### 此程序是开发者自己用来写小说草稿的软件，放上来供有相同需求的写作者使用。
 #### 软件专注文学类草稿写作，提供了一些有针对性的功能：<br>
 * 新建一个项目可以管理文件、文件集、文件夹和关键词列表等；
