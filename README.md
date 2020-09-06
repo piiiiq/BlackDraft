@@ -1,5 +1,5 @@
 #### BlackDraft基于下面这些项目开发，在此感谢这些项目的开发者
-* QTJAMBI - QT4.8的Java封装版本，为Java编程语言提供了高效、易用、基于操作系统平台构建的本地化界面库(sourceforge.net/projects/qtjambi)
+* QTJAMBI - QT框架(C++)的Java封装版本，为Java编程语言提供了高效、易用、基于操作系统平台构建的本地化界面库(sourceforge.net/projects/qtjambi)
 * HanLP - 以Java语言编写的中文语言处理工具包(github.com/hankcs/HanLP/)
 * JGIT - Git的Java封装版本(www.eclipse.org/jgit/)
 * PINYIN4J - 文本转拼音支持(pinyin4j.sourceforge.net)
