@@ -24,4 +24,12 @@
  基于新底层库的版本删去了旧版本中的某些功能，例如光标动画、长光标等，原因是程序中基于Qt4实现的一些功能在Qt5上不能正常工作。
  
  
- 
+ <br><br>
+此软件使用了如下的开源模块/库：<br>
+QTJAMBI5 - 许可证不详(https://github.com/OmixVisualization/qtjambi)<br>
+QTJAMBI4 - LGPL-3许可证(sourceforge.net/projects/qtjambi)<br>
+HanLP - Apache-2许可证(github.com/hankcs/HanLP/)<br>
+JGIT - EDL许可证(www.eclipse.org/jgit/)<br>
+PINYIN4J - BSD许可证(pinyin4j.sourceforge.net)<br>
+WINRUN4J - CPL许可证(github.com/poidasmith/winrun4j)<br>
+感谢这些软件库的开发者，没有这些软件就没有BlackDraft。
