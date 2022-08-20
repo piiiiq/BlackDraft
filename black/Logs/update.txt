@@ -1,5 +1,0 @@
-程序根目录：D:\test\eclipseWorkspace\black\.
-更新包路径：D:\test\eclipseWorkspace\black\.\update\0.665.zip
-blackDraft启动文件路径：D:\test\eclipseWorkspace\black\.\BlackDraft.exe
-black.jar文件是否存在：false
-invalid stored block lengths
