@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="D:/Apps/Unpack/MyApp/Tools/qtjambi-5.15-binaries-win64-msvc2019/bin"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk-14.0.2">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/Black-libs/com.jcraft.jsch_0.1.31.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/Black-libs/hanlp-portable-1.7.8_2.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/Black-libs/junit.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/Black-libs/org.eclipse.jgit-4.6.0.201612231935-r.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/Black-libs/pinyin4j-2.5.0.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/Black-libs/slf4j-api-1.6.0.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/Black-libs/slf4j-jdk14-1.6.0.jar"/>
+	<classpathentry kind="lib" path="D:/Apps/Unpack/MyApp/Tools/qtjambi-5.15.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

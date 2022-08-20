@@ -1,0 +1,28 @@
+o //微软双拼的零声母辅助键，必须放在第一行
+a YaE
+b SbE YouE
+c ScE YiaoE
+d SdE YiangE AuangE //d为按键；S和E之间的字符串为按键所对应的声母；Y和E之间的字符串为按键所对应的第一韵母；A和E之间的字符串为按键所对应的第二韵母。
+e YeE
+f SfE YenE
+g SgE YengE
+h ShE YangE
+i SchE YiE
+j SjE YanE
+k SkE YaoE
+l SlE YaiE
+m SmE YianE
+n SnE YinE
+o YoE AuoE
+p SpE YunE
+q SqE YiuE
+r SrE YuanE AerE
+s SsE YiongE AongE
+t StE YueE
+u SshE YuE
+v SzhE YuiE AueE
+w SwE YiaE AuaE
+x SxE YieE
+y SyE YuaiE AvE
+z SzE YeiE
+; YingE
