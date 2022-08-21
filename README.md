@@ -27,9 +27,9 @@
  alt+2切换白天或夜间配色(写作视图下有效)<br>
 在搜索框中输入“$bc 设置颜色 h”（不含引号）可查看设置颜色这个命令的用法<br>
 在搜索框中输入“$bc 随机图片 0”（不含引号）可关闭随机图片背景<br>
-#### 命令通常在搜索框中输入，输入“$bc help”（不含引号）命令可查看程序当前版本支持的全部命令
+<h5>命令通常在搜索框中输入，输入“$bc help”（不含引号）命令可查看程序当前版本支持的全部命令</h5>
  <br><br>
-### 此软件使用了如下的开源模块/库：<br>
+<h4>此软件使用了如下的开源模块/库:</h4><br>
 QTJAMBI5 - 许可证不详(github.com/OmixVisualization/qtjambi)<br>
 QTJAMBI4 - LGPL-3许可证(sourceforge.net/projects/qtjambi)<br>
 HanLP - Apache-2许可证(github.com/hankcs/HanLP/)<br>
