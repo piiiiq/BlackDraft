@@ -14,7 +14,7 @@
 <li> 其他功能懒得写了，自己玩去吧
  <br><br>
  <h4>使用方法</h4>
- 从release页面下载压缩包，解压缩后运行BlackDraft.exe即可。从0.6951版本开始只支持64位windows系统，程序在windows 8上开发与发布，理论上兼容所有64位windows vista到windows 11的系统。0.6951以下的版本可在32/64位的windows XP到windows 11中运行。
+ 从release页面下载压缩包，解压缩后运行BlackDraft.exe即可。从0.6951版本开始只支持64位windows系统。程序在windows 8上开发与发布，理论上兼容所有64位windows vista到windows 11的系统。0.6951以下的版本可在32/64位的windows XP到windows 11中运行。
 <h4>开发说明</h4>
 用word写小说总有些不如意的地方，找了一圈软件，没一个软件用着顺手，包括那些付费的，所以决定自己写一个。断断续续写了很多年，边写边用，发现忍不了的bug才会修一修。
 <br><br>
