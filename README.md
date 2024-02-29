@@ -1,4 +1,3 @@
-![截图](./Screenshot/1.PNG)
 这是开发者自己用来写小说的软件，放上来供有相同需求的人使用。
 
  <h4>这个软件包含如下的功能：</h4>
@@ -15,7 +14,10 @@
 <li> 可以对软件设定访问密码
 <li> ....
  <br><br>
+</li>
 
+![截图](./Screenshot/2.PNG)
+![截图](./Screenshot/1.PNG)
  
  <h4>使用方法</h4>
  从release页面下载压缩包，解压缩后运行BlackDraft.exe即可。从0.6951版本开始只支持64位windows系统。程序在windows 8上开发与测试，在win10及以上系统可能存在bug，理论上基本兼容win7及更高版本的系统。0.6951以下的版本可在32/64位的windows XP到windows 11中运行。
