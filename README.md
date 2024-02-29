@@ -16,9 +16,10 @@
  <br><br>
 </li>
 
-![截图](./Screenshot/2.PNG)
-![截图](./Screenshot/1.PNG)
- 
+![密码锁界面截图](./Screenshot/3.PNG)
+![普通视图截图](./Screenshot/4.PNG)
+![精简视图截图](./Screenshot/5.PNG)
+![写作视图截图](./Screenshot/6.PNG)
  <h4>使用方法</h4>
  从release页面下载压缩包，解压缩后运行BlackDraft.exe即可。从0.6951版本开始只支持64位windows系统。程序在windows 8上开发与测试，在win10及以上系统可能存在bug，理论上基本兼容win7及更高版本的系统。0.6951以下的版本可在32/64位的windows XP到windows 11中运行。
 <h4>开发说明</h4>
