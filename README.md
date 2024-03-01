@@ -47,7 +47,7 @@
 <li> 暂时只想到上面这些，以后再补充……
 <br>命令通常在搜索框中输入，在普通视图右上角的搜索框或按下Ctrl+f弹出的搜索框都可。输入“$bc help”（不含引号）命令可查看程序当前版本支持的全部命令及其用法
  <br><br>
-<h4>此软件使用了如下的开源模块/库</h4>
+<h4>此软件使用的开源模块/库：</h4>
 QTJAMBI5 - 许可证不详(github.com/OmixVisualization/qtjambi)<br>
 QTJAMBI4 - LGPL-3许可证(sourceforge.net/projects/qtjambi)<br>
 HanLP - Apache-2许可证(github.com/hankcs/HanLP/)<br>
