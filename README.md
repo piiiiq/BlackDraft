@@ -21,7 +21,8 @@
 ![精简视图截图](./Screenshot/5.PNG)
 ![写作视图截图](./Screenshot/6.PNG)
  <h4>使用方法</h4>
- 从release页面下载压缩包，解压缩后运行BlackDraft.exe即可。从0.6951版本开始只支持64位windows系统。程序在windows 8上开发与测试，在win10及以上系统可能存在bug，理论上基本兼容win7及更高版本的系统。0.6951以下的版本可在32/64位的windows XP到windows 11中运行。
+Windows：从release页面下载压缩包，解压缩后运行BlackDraft.exe即可。从0.6951版本及以上版本只支持64位系统，需在windows7及以上版本中运行，。0.6951以下的版本可在32/64位的windows XP到windows 11中运行。
+Linux：Linux版本需要自行安装Java运行库，安装Java运行库后为程序根目录下的runBlack.sh文件赋予可执行权限，然后运行runBlack.sh文件即可。
 <h4>开发说明</h4>
 用word写小说总有些不如意的地方，找了一圈软件，没一个软件用着顺手，包括那些付费的，所以决定自己写一个。断断续续写了很多年，边写边用，发现忍不了的bug才会修一修。
  <br><br>
