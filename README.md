@@ -21,12 +21,10 @@
 ![精简视图截图](./Screenshot/5.PNG)
 ![写作视图截图](./Screenshot/6.PNG)
  <h4>使用方法</h4>
-Windows：从release页面下载压缩包，解压缩后运行BlackDraft.exe即可。从0.6951版本及以上版本只支持64位系统，需在windows7及以上版本中运行，。0.6951以下的版本可在32/64位的windows XP到windows 11中运行。
-Linux：Linux版本需要自行安装Java运行库，安装Java运行库后为程序根目录下的runBlack.sh文件赋予可执行权限，然后运行runBlack.sh文件即可。
-<h4>开发说明</h4>
-用word写小说总有些不如意的地方，找了一圈软件，没一个软件用着顺手，包括那些付费的，所以决定自己写一个。断断续续写了很多年，边写边用，发现忍不了的bug才会修一修。
+Windows：从release页面下载压缩包，解压缩后运行BlackDraft.exe即可。v0.6951及以上版本只支持64位系统，需在windows7及以上版本中运行，v0.6951以下的版本可在32/64位的windows XP到windows 11中运行。<br>
+Linux：Linux版本需要自行安装Java运行库，安装Java运行库后从release页面下载压缩包，解压缩，为程序根目录下的runBlack.sh文件赋予可执行权限，然后运行runBlack.sh文件即可。
  <br><br>
-此软件使用Java语言编写，基于Qt（一个C++跨平台框架）构建，因为使用Java+Qt编写，发布软件时需携带Java与Qt两者的执行库才能正常运行，Java库压缩后约60MB大小，Qt库压缩后约20MB大小。
+此软件使用Java语言编写，基于Qt（一个C++跨平台框架）构建，因为使用Java+Qt编写，发布软件时需携带Java与Qt两者的执行库，才能正常运行，Java库压缩后约60MB大小，Qt库压缩后约20MB大小。
 <br><br>
 <h4>一些常用但没有提供用户界面调用的功能</h4>
 <li> alt+1备份到本地储存器，例如U盘。更多本地备份功能查看备份命令
