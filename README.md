@@ -22,7 +22,7 @@
 ![写作视图截图](./Screenshot/6.PNG)
  <h4>使用方法</h4>
 Windows：从release页面下载压缩包，解压缩后运行BlackDraft.exe即可。v0.6951及以上版本只支持64位系统，需在windows7及以上版本中运行，v0.6951以下的版本可在32/64位的windows XP到windows 11中运行。<br>
-Linux：Linux版本需要自行安装Java运行库，安装Java运行库后从release页面下载压缩包，解压缩，为程序根目录下的runBlack.sh文件赋予可执行权限，然后运行runBlack.sh文件即可。
+Linux：Linux版本需要自行安装Java运行库（Java9及以上），安装Java运行库后从release页面下载压缩包，解压缩，为程序根目录下的runBlack.sh文件赋予可执行权限，然后运行runBlack.sh文件即可。
  <br><br>
 此软件使用Java语言编写，基于Qt（一个C++跨平台框架）构建，因为使用Java+Qt编写，发布软件时需携带Java与Qt两者的执行库，才能正常运行，Java库压缩后约60MB大小，Qt库压缩后约20MB大小。
 <br><br>
